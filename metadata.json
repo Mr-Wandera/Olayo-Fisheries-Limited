@@ -1,0 +1,6 @@
+{
+  "name": "Olayo Fisheries Limited",
+  "description": "Enterprise-grade fisheries management, cold-chain tracking, interactive ocean mapping, fleet operations, and seafood marketplace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
