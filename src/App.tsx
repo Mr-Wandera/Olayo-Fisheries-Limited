@@ -12,11 +12,12 @@ import AiAssistant from './components/AiAssistant';
 import OlayoEcosystem from './components/OlayoEcosystem';
 import CompanyProfile from './components/CompanyProfile';
 import OlayoOperationsPortal from './components/OlayoOperationsPortal';
+import MissionControl from './components/MissionControl';
 import SplashExperience from './components/SplashExperience';
 import LaunchConsole from './components/LaunchConsole';
 import OlayoIntelligence from './components/OlayoIntelligence';
 import { WaterRippleEffect } from './components/InteractionEngine';
-import { Ship, Thermometer, ShieldCheck, Award, Info, AlertCircle, Sparkles, User, BrainCircuit, Bell, Heart } from 'lucide-react';
+import { Ship, Thermometer, ShieldCheck, Award, Info, CircleAlert as AlertCircle, Sparkles, User, BrainCircuit, Bell, Heart } from 'lucide-react';
 
 export default function App() {
   // Navigation
@@ -283,6 +284,9 @@ export default function App() {
                 </button>
               </motion.div>
             </section>
+
+            {/* Living Mission Control — continuous farm operations */}
+            <MissionControl sustainabilityScore={sustainability.environmentalScore} />
 
             {/* Platform Sustainability stats bento dashboard */}
             <section className="space-y-4">

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { Boat, CatchReport, Product, Order, ColdChainFacility, Lesson, Notification, SustainabilityMetrics, UserProfile } from './types';
+import { Boat, CatchReport, Product, Order, ColdChainFacility, Lesson, Notification, SustainabilityMetrics, UserProfile, FarmEvent, FarmStatus } from './types';
+import { backfillEvents, computeFarmStatus, generateEvent } from './simulation/farmEngine';
 
 const DB_FILE = path.join(process.cwd(), 'data', 'database.json');
 
@@ -14,6 +15,7 @@ interface DatabaseSchema {
   lessons: Lesson[];
   notifications: Notification[];
   sustainability: SustainabilityMetrics;
+  farmEvents: FarmEvent[];
 }
 
 // Initial seed data
@@ -698,7 +700,8 @@ Maintaining solid thermal logging from vessel GPS logs, truck RFID tags, to ware
     fishingQuotaUsed: 62.4,
     wasteReducedKg: 4250,
     responsibleQuotaProgress: 75,
-  }
+  },
+  farmEvents: []
 };
 
 class DatabaseStore {
@@ -903,6 +906,42 @@ class DatabaseStore {
     this.data.sustainability.environmentalScore = Math.min(100, this.data.sustainability.environmentalScore + amount);
     this.save();
   }
+
+  // ---- Living farm simulation ----
+  getFarmEvents(limit?: number): FarmEvent[] {
+    const sorted = [...this.data.farmEvents].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    return limit ? sorted.slice(0, limit) : sorted;
+  }
+
+  addFarmEvent(event: FarmEvent) {
+    this.data.farmEvents.unshift(event);
+    // Cap stored history to 500 events to keep the file manageable
+    if (this.data.farmEvents.length > 500) {
+      this.data.farmEvents = this.data.farmEvents.slice(0, 500);
+    }
+    this.save();
+  }
+
+  getFarmStatus(): FarmStatus {
+    return computeFarmStatus(new Date());
+  }
+
+  tickSimulation(): FarmEvent | null {
+    const now = new Date();
+    const status = this.getFarmStatus();
+    const event = generateEvent(now, status);
+    this.addFarmEvent(event);
+    return event;
+  }
+
+  ensureSeedEvents() {
+    if (this.data.farmEvents.length === 0) {
+      const seeded = backfillEvents(new Date(), 18);
+      this.data.farmEvents = seeded.reverse();
+      this.save();
+    }
+  }
 }
 
 export const db = new DatabaseStore();
+db.ensureSeedEvents();

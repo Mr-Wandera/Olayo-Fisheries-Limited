@@ -142,3 +142,67 @@ export interface SustainabilityMetrics {
   wasteReducedKg: number;
   responsibleQuotaProgress: number; // out of 100
 }
+
+export type FarmEventCategory =
+  | 'feeding'
+  | 'water'
+  | 'harvest'
+  | 'fleet'
+  | 'marketplace'
+  | 'quality'
+  | 'finance'
+  | 'research'
+  | 'community'
+  | 'maintenance'
+  | 'weather'
+  | 'ai';
+
+export interface FarmEvent {
+  id: string;
+  timestamp: string; // ISO
+  category: FarmEventCategory;
+  title: string;
+  description: string;
+  actor: string; // who/what performed it
+  location?: string; // cage, boat, facility
+  severity: 'info' | 'success' | 'warning' | 'critical';
+}
+
+export interface CageStatus {
+  id: string;
+  name: string;
+  species: string;
+  biomassKg: number;
+  avgWeightG: number;
+  population: number;
+  waterTempC: number;
+  dissolvedOxygenMgL: number;
+  ph: number;
+  turbidityNTU: number;
+  feedTodayKg: number;
+  mortalityToday: number;
+  lastInspection: string;
+  healthScore: number; // 0-100
+}
+
+export interface FarmStatus {
+  timestamp: string;
+  lakeTempC: number;
+  ambientTempC: number;
+  dissolvedOxygenMgL: number;
+  ph: number;
+  turbidityNTU: number;
+  windKnots: number;
+  weather: 'clear' | 'cloudy' | 'rain' | 'storm';
+  timeOfDay: 'morning' | 'midday' | 'afternoon' | 'golden' | 'sunset' | 'night' | 'midnight';
+  totalBiomassKg: number;
+  totalPopulation: number;
+  activeCages: number;
+  staffOnDuty: number;
+  boatsActive: number;
+  pendingOrders: number;
+  todayRevenue: number;
+  todayFeedKg: number;
+  todayMortality: number;
+  cages: CageStatus[];
+}

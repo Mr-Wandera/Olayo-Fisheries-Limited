@@ -302,6 +302,24 @@ app.get('/api/lessons', (req, res) => {
 });
 
 // -------------------------------------------------------------
+// LIVING FARM SIMULATION ENDPOINTS
+// -------------------------------------------------------------
+app.get('/api/farm-status', (req, res) => {
+  res.json(db.getFarmStatus());
+});
+
+app.get('/api/timeline', (req, res) => {
+  const limit = parseInt((req.query.limit as string) || '40');
+  res.json(db.getFarmEvents(limit));
+});
+
+// Advance the simulation one tick (generates a fresh event + updated status)
+app.post('/api/timeline/tick', (req, res) => {
+  const event = db.tickSimulation();
+  res.json({ success: true, event, status: db.getFarmStatus() });
+});
+
+// -------------------------------------------------------------
 // ADVANCED GEMINI AI API ENDPOINT
 // -------------------------------------------------------------
 app.post('/api/ai/analyze', async (req, res) => {
