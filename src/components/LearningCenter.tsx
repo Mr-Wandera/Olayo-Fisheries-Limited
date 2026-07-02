@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lesson, QuizQuestion, UserProfile } from '../types';
-import { BookOpen, Award, CheckCircle, HelpCircle, ArrowRight, Play, Sparkles, Bookmark } from 'lucide-react';
+import { BookOpen, Award, CircleCheck as CheckCircle, Circle as HelpCircle, ArrowRight, Play, Sparkles, Bookmark } from 'lucide-react';
 import { FloatingCard, SwipeContainer } from './InteractionEngine';
 
 interface LearningCenterProps {
@@ -71,8 +71,8 @@ export default function LearningCenter({ lessons, currentUser, onUserCertified }
       <div className="lg:col-span-2 space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="font-display font-semibold text-white text-base">Olayo Maritime Academy</h3>
-            <p className="text-xs text-cyan-300/60 font-sans">Learn sustainable fisheries regulation, gear methods, and quality standards</p>
+            <h3 className="font-display font-semibold text-white text-base">Olayo Aquaculture Academy</h3>
+            <p className="text-xs text-cyan-300/60 font-sans">Learn cage aquaculture, water quality management, and cold chain standards</p>
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export default function LearningCenter({ lessons, currentUser, onUserCertified }
             <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-3 flex gap-2 items-start mt-2">
               <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-[10px] text-emerald-200 font-sans leading-normal">
-                Congratulations! You are officially recognized as an **Olayo Certified Seafood Expert**. The certified crest is now visible in your transaction logs.
+                Congratulations! You are officially recognized as an Olayo Certified Aquaculture Professional. The certified crest is now visible in your transaction logs.
               </div>
             </div>
           )}

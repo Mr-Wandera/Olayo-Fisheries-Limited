@@ -1,5 +1,5 @@
 import React from 'react';
-import { Waves, ShoppingBag, Map, Link, BookOpen, UserCog, Menu, Info, Briefcase, ShieldCheck, BrainCircuit } from 'lucide-react';
+import { Waves, Fish, ShoppingBag, BrainCircuit, GraduationCap } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -9,22 +9,16 @@ interface NavigationProps {
 
 export default function Navigation({ activeTab, onTabChanged, cartCount }: NavigationProps) {
   const navItems = [
-    { id: 'home', label: 'Ocean Portal', icon: Waves },
-    { id: 'about', label: 'Our Story', icon: Info },
-    { id: 'marketplace', label: 'Seafood Market', icon: ShoppingBag },
-    { id: 'map', label: 'SatLink Map', icon: Map },
-    { id: 'supply', label: 'Supply Chain Ledger', icon: Link },
-    { id: 'academy', label: 'Marine Academy', icon: BookOpen },
-    { id: 'operations', label: 'Enterprise Ops', icon: Briefcase },
-    { id: 'oi', label: 'Olayo Intelligence (OI)', icon: BrainCircuit },
-    { id: 'dashboards', label: 'Operations Hub', icon: UserCog },
-    { id: 'console', label: 'V1.0 Console', icon: ShieldCheck },
+    { id: 'mission', label: 'Mission Control', icon: Waves },
+    { id: 'farm', label: 'Farm', icon: Fish },
+    { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag },
+    { id: 'intelligence', label: 'Intelligence', icon: BrainCircuit },
+    { id: 'academy', label: 'Academy', icon: GraduationCap },
   ];
 
   return (
-    <nav className="sticky top-0 z-40 bg-slate-950/75 border-b border-cyan-500/20 backdrop-blur-md px-6 py-4 flex justify-between items-center transition-all">
-      {/* Brand Logo */}
-      <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => onTabChanged('home')}>
+    <nav className="sticky top-0 z-40 bg-slate-950/75 border-b border-cyan-500/20 backdrop-blur-md px-4 sm:px-6 py-3 flex justify-between items-center transition-all">
+      <div className="flex items-center gap-2.5 cursor-pointer shrink-0" onClick={() => onTabChanged('mission')}>
         <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-500 p-0.5 flex items-center justify-center shadow-lg shadow-cyan-500/20">
           <Waves className="w-5 h-5 text-slate-950 stroke-[2.5]" />
         </div>
@@ -34,7 +28,6 @@ export default function Navigation({ activeTab, onTabChanged, cartCount }: Navig
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="hidden lg:flex items-center bg-slate-900/60 border border-cyan-500/10 p-1 rounded-xl">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -55,7 +48,6 @@ export default function Navigation({ activeTab, onTabChanged, cartCount }: Navig
         })}
       </div>
 
-      {/* Mobile Menu Dropdown indicator */}
       <div className="lg:hidden flex items-center gap-3">
         <select
           value={activeTab}

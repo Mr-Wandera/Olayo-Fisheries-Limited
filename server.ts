@@ -163,7 +163,7 @@ app.post('/api/orders', (req, res) => {
     status: 'pending' as const,
     date: new Date().toISOString(),
     trackingStage: 'Ocean' as const,
-    deliveryRoute: ['FAO Atlantic North', 'Vigo Storage Facility', 'Port customs', 'Olayo Warehouse Hub', 'Restaurant/Retailer Doorstep'],
+    deliveryRoute: ['Busiime Cage Grid', 'Busia Processing Hub', 'Kampala Distribution', 'Retail/Restaurant Doorstep'],
     invoiceUrl: `/api/orders/invoice/${orderId}`,
   };
   db.addOrder(newOrder);
@@ -214,7 +214,7 @@ app.get('/api/orders/invoice/:id', (req, res) => {
         <div class="header">
           <div>
             <div class="logo">Olayo Fisheries Limited</div>
-            <div>Calle de la Mar, Vigo Port, Spain</div>
+            <div>Busiime, Busia District, Uganda</div>
             <div>support@olayo.com</div>
           </div>
           <div class="title">
@@ -252,7 +252,7 @@ app.get('/api/orders/invoice/:id', (req, res) => {
           Total: $${order.total.toFixed(2)}
         </div>
         <div style="margin-top: 60px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-          This commercial invoice is digitally signed and audited on Olayo Ledger. Sourced from sustainable seafood quotas.
+          This commercial invoice is digitally signed and audited on Olayo Ledger. Sourced from sustainable cage aquaculture on Lake Victoria.
         </div>
       </body>
     </html>
@@ -340,20 +340,20 @@ app.post('/api/ai/analyze', async (req, res) => {
     let userPrompt = prompt || '';
 
     if (mode === 'identify') {
-      systemPrompt = 'You are a Marine Biologist and Fisheries expert. Analyze this image. Identify the fish species, scientific name, key ecological traits, standard weight ranges, and standard habitat depths. Format the output with clear markdown headings.';
+      systemPrompt = 'You are an aquaculture biologist specializing in Lake Victoria cage farming. Identify the fish species, scientific name, key biological traits, typical weight ranges, and cage culture requirements. Format the output with clear markdown headings.';
       if (!imageBase64) {
         userPrompt = `Please identify this fish based on this description: ${prompt}`;
       }
     } else if (mode === 'freshness') {
-      systemPrompt = 'You are an expert Seafood Quality Assurance Inspector. Analyze the physical features described (or image provided) such as gills, eyes, scales, firmness, and smell. Assess the freshness grade (Prime, Excellent, Standard, or Reject). Provide scientific reasoning, potential shelf-life remaining, and storage guidelines.';
+      systemPrompt = 'You are an expert aquaculture Quality Assurance Inspector for Olayo Fisheries on Lake Victoria. Analyze the physical features described (or image provided) such as gills, eyes, scales, firmness, and smell. Assess the freshness grade (Prime, Excellent, Standard, or Reject). Provide scientific reasoning, potential shelf-life remaining, and cold chain storage guidelines.';
     } else if (mode === 'price') {
-      systemPrompt = 'You are an International Seafood Market Analyst. Based on the species, fishing method, origin, and seasonal data, provide a professional price estimation (USD/kg), demand forecasting (High/Moderate/Low), and recommended distribution channels.';
+      systemPrompt = 'You are an East African aquaculture market analyst. Based on the species, farming method, origin, and seasonal data, provide a professional price estimation (USD/kg), demand forecasting (High/Moderate/Low), and recommended distribution channels across Uganda and East Africa.';
     } else if (mode === 'recipe') {
-      systemPrompt = 'You are a Michelin Star Seafood Culinary Chef. Recommend a premium, gourmet recipe for this species. Include prep time, cook time, ingredients list, step-by-step culinary instructions, wine pairing suggestions, and standard storage guidelines.';
+      systemPrompt = 'You are a chef specializing in East African cuisine featuring Lake Victoria aquaculture products. Recommend a premium recipe for this species. Include prep time, cook time, ingredients list, step-by-step culinary instructions, and storage guidelines.';
     } else if (mode === 'smart_search') {
-      systemPrompt = 'You are a Semantic Smart Search agent for a premium seafood catalog. Match the user\'s organic request (e.g., "healthy, high protein, line caught") against typical seafood profiles like Salmon, Bluefin Tuna, Sea Bass, Cod, and King Crab. Explain which species matches their exact search query and why.';
+      systemPrompt = 'You are a semantic smart search agent for Olayo Fisheries aquaculture catalog. Match the user\'s organic request (e.g., "healthy, high protein, fresh water fish") against species like Nile Tilapia, Nile Perch, and African Catfish. Explain which species matches their exact search query and why.';
     } else {
-      systemPrompt = 'You are an advanced AI consultant for Olayo Fisheries platform. Answer this fisheries-related question with professional, detailed, and clean technical insights.';
+      systemPrompt = 'You are Olayo Intelligence (OI), the digital executive team for Olayo Fisheries Limited, a cage aquaculture company on Lake Victoria in Busiime, Busia District, Uganda. Answer this aquaculture-related question with professional, detailed, and clean technical insights about cage farming, water quality, feed management, harvest logistics, and sustainability.';
     }
 
     let contents: any = userPrompt;
@@ -384,72 +384,67 @@ app.post('/api/ai/analyze', async (req, res) => {
   }
 });
 
-// Professional, extremely realistic rules-based AI response generator
+// Professional, realistic rules-based AI response generator for Lake Victoria cage aquaculture
 function getMockAiResponse(mode: string, prompt: string, imgBase64?: string): any {
   const query = (prompt || '').toLowerCase();
-  
+
   if (mode === 'identify' || query.includes('identify') || imgBase64) {
-    let species = 'Atlantic Bluefin Tuna';
-    let scientific = 'Thunnus thynnus';
-    let zone = 'FAO Zone 27 (Atlantic)';
-    let desc = 'Large, streamlined body with metallic dark blue back and silvery-white belly. Prized for luxury sashimi.';
-    
-    if (query.includes('cod') || query.includes('white')) {
-      species = 'Atlantic Cod';
-      scientific = 'Gadus morhua';
-      zone = 'FAO Zone 27.IV (North Sea)';
-      desc = 'Distinct barbel on chin, brown-green speckles. Highly sought-after for flaky premium loins.';
-    } else if (query.includes('crab') || query.includes('legs')) {
-      species = 'Red King Crab';
-      scientific = 'Paralithodes camtschaticus';
-      zone = 'Barents Sea';
-      desc = 'Massive heavy shell with spiked legs. Offers sweet, rich, lobster-like meat of exceptional grade.';
-    } else if (query.includes('lobster')) {
-      species = 'European Red Lobster';
-      scientific = 'Homarus gammarus';
-      zone = 'Skagerrak Reefs';
-      desc = 'Vibrant dark navy-red shell, powerful pincers. Exquisite delicate texture favored by luxury European dining rooms.';
+    let species = 'Nile Tilapia';
+    let scientific = 'Oreochromis niloticus';
+    let origin = 'Busiime Cage Grid, Lake Victoria, Uganda';
+    let desc = 'Deep-bodied cichlid with grey-olive scales and faint vertical bands. Hardy, fast-growing, ideal for cage culture in freshwater lakes.';
+
+    if (query.includes('perch')) {
+      species = 'Nile Perch';
+      scientific = 'Lates niloticus';
+      origin = 'Busiime Cage Grid (Beta), Lake Victoria, Uganda';
+      desc = 'Large predatory fish with silver body and dark eyes. Premium white flesh prized for export fillets. Grows rapidly in cage systems.';
+    } else if (query.includes('catfish')) {
+      species = 'African Catfish';
+      scientific = 'Clarias gariepinus';
+      origin = 'Busiime Cage Grid (Gamma), Lake Victoria, Uganda';
+      desc = 'Hardy bottom-dweller with barbels and dark mottled skin. Excellent air-breathing capacity makes it resilient to low-oxygen conditions.';
     }
 
     return {
       success: true,
-      text: `### 🌊 Olayo Species Identification: **${species}**\n\n* **Scientific Name**: *${scientific}*\n* **Harvest Location**: ${zone}\n* **Taxonomy Profile**: Pelagic Megafauna / Premium Commercial Harvest\n\n#### 📊 Ecological Analysis\n${desc} Spawns in temperate oceanic currents. Sourced strictly under strict sustainability quotas set by international councils.\n\n#### 📈 Market Metrics & Depth Profile\n* **Typical depth**: 50 - 300 meters\n* **Standard commercial weight**: 15kg to 120kg per individual\n* **Quotas remaining**: Healthy (84% available)\n\n*(Note: This is a highly accurate Olayo AI species model reading. Perfect for certification logs.)*`
+      text: `### Olayo Species Identification: **${species}**\n\n* **Scientific Name**: *${scientific}*\n* **Harvest Location**: ${origin}\n* **Farming Method**: Cage aquaculture on Lake Victoria\n\n#### Biological Profile\n${desc} Thrives in Lake Victoria's warm tropical waters (23-27°C). Fed high-quality floating pellets with a feed conversion ratio of 1.2-1.5.\n\n#### Market Metrics\n* **Typical harvest weight**: 300g - 1,500g depending on species and cage\n* **Growth cycle**: 6-9 months from fingerling to market size\n* **Health status**: All cages under continuous monitoring by Olayo veterinary team\n\n*(Olayo Intelligence species model reading. Verified against Busiime cage inspection logs.)*`
     };
   }
 
   if (mode === 'freshness') {
     return {
       success: true,
-      text: `### 🧪 Olayo Quality Control: Freshness Grade Report\n\n* **Assessed Grade**: 🌟 **PRIME (Sashimi-Grade A+)**\n* **Drip-Loss Index**: 1.2% (Highly stable)\n* **Quality Score**: **98 / 100**\n\n#### 🔍 Inspector Physical Diagnostics\n1. **Ocular Clarity**: Eyes are perfectly translucent and bulbous with zero clouding or blood-spots.\n2. **Gill Saturation**: Bright coral-red gills, damp and completely odor-free.\n3. **Muscle Firmness**: Springy elasticity. Indentations resolve within 0.8 seconds of contact.\n4. **Lipid Integrity**: Zero rancidity, characteristic fresh oceanic sea-salt aroma.\n\n#### 🌡️ Logistics Guidance\n* **Cold Chain Target**: Store at **-2.5°C** to **-1.0°C**.\n* **Shelf Life**: 14 days remaining if stored inside super-chilled sealed containers.\n* **Culinary Best Use**: Raw crudo, sashimi, or quick ultra-high heat searing.`
+      text: `### Olayo Quality Control: Freshness Grade Report\n\n* **Assessed Grade**: **PRIME (Grade A+)**\n* **Quality Score**: **96 / 100**\n\n#### Inspector Physical Diagnostics\n1. **Ocular Clarity**: Eyes are clear and bulbous with zero clouding.\n2. **Gill Condition**: Bright red-pink gills, moist and odor-free.\n3. **Muscle Firmness**: Firm, springy texture. Flesh rebounds immediately on touch.\n4. **Aroma Profile**: Clean, fresh lake-water scent. Zero off-odors.\n\n#### Cold Chain Guidance\n* **Storage Target**: Maintain at **-1.5°C to 0°C** in Busia Processing Hub cold store.\n* **Shelf Life**: 10-12 days remaining under proper cold chain.\n* **Recommended Use**: Wholesale distribution to Kampala, or export-grade fillet processing.`
     };
   }
 
   if (mode === 'price') {
-    let species = query.includes('crab') ? 'King Crab' : query.includes('cod') ? 'Cod' : 'Bluefin Tuna';
-    let basePrice = species === 'King Crab' ? '75.00' : species === 'Cod' ? '18.50' : '45.00';
+    let species = query.includes('perch') ? 'Nile Perch' : query.includes('catfish') ? 'African Catfish' : 'Nile Tilapia';
+    let basePrice = species === 'Nile Perch' ? '12.50' : species === 'African Catfish' ? '6.50' : '5.80';
     return {
       success: true,
-      text: `### 💰 Olayo Global Price Estimate: **${species}**\n\n* **Market Estimate**: **$${basePrice} USD per kg**\n* **Logistics Margin**: +4.2% (FOB Vigo Port)\n* **Demand Index**: 📈 **EXCEPTIONAL (High Market Velocity)**\n\n#### 🗺️ Regional Price Variance\n* **European Markets (Vigo, Madrid)**: $${(parseFloat(basePrice)*0.95).toFixed(2)} - $${basePrice} USD/kg\n* **Asian Exporters (Tokyo TSJ)**: $${(parseFloat(basePrice)*1.4).toFixed(2)} USD/kg (Airfreight premium)\n* **North American Distributors**: $${(parseFloat(basePrice)*1.15).toFixed(2)} USD/kg\n\n#### 📊 Seasonal Forecasting\nSupply remains tightly controlled by environmental fishing limits. Expect a +5% rise in prices towards late autumn as seasonal restaurant reservations peak. Recommended purchasing strategy: **Pre-book batches via Olayo Forward Contracts**.`
+      text: `### Olayo Market Price Estimate: **${species}**\n\n* **Farm-gate Price**: **$${basePrice} USD per kg**\n* **Demand Index**: **HIGH (Strong Kampala and export demand)**\n\n#### Regional Price Variance\n* **Busia Local Market**: $${(parseFloat(basePrice)*0.85).toFixed(2)} - $${basePrice} USD/kg\n* **Kampala Wholesale**: $${(parseFloat(basePrice)*1.1).toFixed(2)} USD/kg\n* **Export (Nile Perch fillets, EU)**: $${(parseFloat(basePrice)*1.8).toFixed(2)} USD/kg\n\n#### Seasonal Forecasting\nLake Victoria cage harvest volumes are stable year-round. Demand peaks during holiday seasons (December, Easter). Recommended strategy: **Pre-book supply via Olayo Marketplace contracts**.`
     };
   }
 
   if (mode === 'recipe') {
     return {
       success: true,
-      text: `### 👨‍🍳 Chef Sato's Culinary Guide: Seared Ocean Medallions\n\n* **Preparation Time**: 15 minutes\n* **Cooking Time**: 6 minutes\n* **Difficulty Level**: Medium-Fine\n\n#### 🛒 Ingredients\n* 500g Olayo premium seafood fillets (cut into 2-inch blocks)\n* 2 tbsp cold-pressed olive oil or butter\n* Sea salt flakes, freshly ground white pepper\n* Fresh sprigs of samphire, sliced finger-lime, lemon balm\n\n#### 🍳 Culinary Steps\n1. **Tempering**: Remove seafood from cold storage and let sit on a sterile board for 5 mins to dry the exterior surface.\n2. **Seasoning**: Rub a drop of cold-pressed oil across the surface. Generously sprinkle with flaky sea salt and a touch of white pepper.\n3. **Searing**: Heat a heavy cast-iron skillet until smoking hot. Sear the blocks for **exactly 45 seconds per side** to achieve a golden crust while leaving the center translucent and buttery.\n4. **Plating**: Slice diagonally. Garnish with fresh samphire sprigs and squeeze finger-lime juice across the top.\n\n🍷 **Sommelier Pairing**: Serve with a highly mineral-forward Albariño or dry French Chablis.`
+      text: `### East African Recipe: Grilled Nile Tilapia with Ugali\n\n* **Preparation Time**: 15 minutes\n* **Cooking Time**: 20 minutes\n* **Difficulty**: Easy\n\n#### Ingredients\n* 1 whole Nile Tilapia (cleaned, scaled) from Olayo Fisheries\n* 2 tbsp vegetable oil\n* 1 lemon, juiced\n* 2 cloves garlic, minced\n* 1 tsp ground cumin, coriander, and smoked paprika\n* Salt and black pepper to taste\n* Fresh dhania (coriander) for garnish\n\n#### Steps\n1. **Marinate**: Score the fish diagonally. Rub with lemon juice, garlic, spices, and oil. Rest 10 minutes.\n2. **Grill**: Heat a charcoal grill or stovetop grill pan. Cook 8-10 minutes per side until skin is crisp and flesh flakes easily.\n3. **Serve**: Plate with hot ugali and a side of sukuma wiki (collard greens). Garnish with fresh dhania.\n\n**Pairing**: Serve with a chilled passion fruit juice or Ugandan Nile Special.`
     };
   }
 
   if (mode === 'smart_search') {
     return {
       success: true,
-      text: `### 🔍 Olayo Semantic Intelligent Search Results\n\nI have scanned our active FAO fisheries catalog for: *"${prompt}"*\n\n#### 🥇 Best Match: **Premium Bluefin Tuna (Sashimi-Grade)**\n* **Why it matches**: Fits all criteria. High-protein (23.3g), sustainably line-caught in the Atlantic, and rich in natural lipids. Highly active in current listings.\n\n#### 🥈 Secondary Match: **Norway Red Lobster**\n* **Why it matches**: Caught via traditional basket traps (zero bycatch, highest sustainability rating). Superb sweet taste, pristine quality scores.`
+      text: `### Olayo Semantic Search Results\n\nI have scanned our aquaculture catalog for: *"${prompt}"*\n\n#### Best Match: **Nile Tilapia (Whole, Cage-Farmed)**\n* **Why it matches**: High-protein (20g per 100g), sustainably cage-farmed on Lake Victoria, rich in omega-3. Available fresh daily from Busiime cages.\n\n#### Secondary Match: **Nile Perch Fillets**\n* **Why it matches**: Premium white-flesh fish, high protein, low fat. Export-grade quality. Ideal for restaurants and wholesale buyers in Kampala.`
     };
   }
 
   return {
     success: true,
-    text: `### 🌊 Olayo Marine Knowledge Engine\n\nThank you for reaching out to Olayo Fisheries. Regarding: *"${prompt}"*\n\n1. **Ecological standard**: All marine resources logged on our platform are verified by port inspector logs and carry dynamic cold chain tags.\n2. **Supply Chain**: The tracking of this biological asset covers initial harvest, temperature storage at Vigo port, and logistics GPS telemetry.\n3. **Sustainability index**: Our platform currently tracks an environmental rating of **78/100**. Logging sustainable hook catches improves this live score.\n\nPlease feel free to ask specialized questions about catch zones, species profiles, or cooking steps!`
+    text: `### Olayo Intelligence (OI) Briefing\n\nThank you for your query: *"${prompt}"*\n\n1. **Farm Status**: All 6 cages at Busiime are operational. Water quality parameters (DO, pH, turbidity) are within NEMA compliance bands.\n2. **Supply Chain**: Harvest flows from cage grid to Busia Processing Hub, then to Kampala distribution and retail/restaurant partners.\n3. **Sustainability**: Olayo Fisheries maintains an environmental score of **78/100** with responsible feed conversion ratios and zero-waste processing targets.\n\nFeel free to ask about cage management, water quality, feed schedules, harvest planning, or market pricing!`
   };
 }
 

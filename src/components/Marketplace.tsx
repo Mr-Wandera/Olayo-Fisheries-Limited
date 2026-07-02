@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, CartItem, Order, UserProfile } from '../types';
-import { Search, ShoppingCart, Heart, Plus, Minus, Info, X, Shield, MapPin, CheckCircle2, ChevronRight, Download, Package } from 'lucide-react';
+import { Search, ShoppingCart, Heart, Plus, Minus, Info, X, Shield, MapPin, CircleCheck as CheckCircle2, ChevronRight, Download, Package } from 'lucide-react';
 import { FloatingCard, SwipeContainer, SlideToConfirm } from './InteractionEngine';
 
 interface MarketplaceProps {
@@ -26,8 +26,8 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
   // Checkout flow state
   const [checkoutStep, setCheckoutStep] = useState<'none' | 'shipping' | 'confirmation'>('none');
   const [shippingName, setShippingName] = useState(currentUser.name);
-  const [shippingAddress, setShippingAddress] = useState('14 Maritime Boulevard, Vigo Port, Spain');
-  const [shippingPhone, setShippingPhone] = useState(currentUser.phone || '+34 612 90 91');
+  const [shippingAddress, setShippingAddress] = useState('Kampala Road, Kampala, Uganda');
+  const [shippingPhone, setShippingPhone] = useState(currentUser.phone || '+256 700 000 000');
   
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
@@ -160,7 +160,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
           <Search className="absolute left-3 top-2.5 h-4.5 w-4.5 text-cyan-400" />
           <input
             type="text"
-            placeholder="Search wild catches by species, scientific taxon, fishing zones, or gear types..."
+            placeholder="Search aquaculture products by species, category, or origin..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-slate-950 border border-cyan-500/10 focus:border-cyan-400 rounded-xl py-2 pl-10 pr-4 text-xs text-white placeholder-cyan-100/30 outline-none transition-all"
@@ -173,11 +173,13 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="bg-slate-950 border border-cyan-500/10 rounded-xl px-3 py-2 text-xs text-cyan-200 outline-none focus:border-cyan-400"
         >
-          <option value="all">All Biological Classes</option>
-          <option value="Pelagic">Pelagic Species (Tuna, Mackerel)</option>
-          <option value="Demersal">Demersal/Groundfish (Cod, Haddock)</option>
-          <option value="Crustacean">Crustaceans (Lobster, King Crab)</option>
-          <option value="Mollusk">Mollusks (Scallops, Oysters)</option>
+          <option value="all">All Categories</option>
+          <option value="Pelagic">Fresh Fish (Tilapia, Perch)</option>
+          <option value="Demersal">Catfish & Bottom Species</option>
+          <option value="Value-Added">Value-Added (Smoked, Processed)</option>
+          <option value="Fingerlings">Fingerlings</option>
+          <option value="Aquaculture">Feed & Supplies</option>
+          <option value="Organic">Organic Fertilizer</option>
         </select>
 
         {/* Sorting */}
@@ -197,7 +199,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
         {/* Left Side Catalog (3 cols) */}
         <div className="lg:col-span-3 space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="font-display font-semibold text-white text-base">FAO Verified Biological Stock</h3>
+            <h3 className="font-display font-semibold text-white text-base">Aquaculture Products</h3>
             <button
               onClick={() => setIsCartOpen(true)}
               className="relative p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 transition-all duration-300 flex items-center gap-1.5 text-xs font-semibold"
@@ -327,7 +329,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
             <Shield className="w-6 h-6 text-cyan-400" />
             <h4 className="font-display font-semibold text-white text-xs">Olayo Cold Chain Certified</h4>
             <p className="text-[11px] text-cyan-100/60 leading-relaxed font-sans">
-              All seafood biological assets listed carry encrypted NFC tag audits. Live temperature sensors feed directly to the European port logistics ledger, ensuring perfect safety.
+              All aquaculture products carry cold chain temperature logs from Busia Processing Hub. NFC-tagged for full traceability from cage to customer.
             </p>
           </div>
         </div>

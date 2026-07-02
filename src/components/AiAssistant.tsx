@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, BrainCircuit, Search, HelpCircle, AlertCircle, ChefHat, Fish, Scale, ShieldCheck } from 'lucide-react';
+import { Sparkles, BrainCircuit, Search, Circle as HelpCircle, CircleAlert as AlertCircle, ChefHat, Fish, Scale, ShieldCheck } from 'lucide-react';
 
 interface AiAssistantProps {
   onSearchResult?: (matchedText: string) => void;
@@ -8,24 +8,24 @@ interface AiAssistantProps {
 
 const SAMPLE_IMAGES = [
   {
-    name: 'Atlantic Bluefin Tuna',
-    img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=200',
-    prompt: 'Identify this massive streamlined bluefin tuna, caught off FAO Zone 27.'
+    name: 'Nile Tilapia',
+    img: 'https://images.pexels.com/photos/3296286/pexels-photo-3296286.jpeg?auto=compress&fit=crop&w=200',
+    prompt: 'Identify this Nile Tilapia from Busiime cage grid on Lake Victoria.'
   },
   {
-    name: 'Atlantic Cod',
-    img: 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&q=80&w=200',
-    prompt: 'Identify this flaky white fish, standard cod caught by bottom longlines.'
+    name: 'Nile Perch',
+    img: 'https://images.pexels.com/photos/3296286/pexels-photo-3296286.jpeg?auto=compress&fit=crop&w=200',
+    prompt: 'Identify this Nile Perch, a large predatory fish from Lake Victoria cages.'
   },
   {
-    name: 'Alaskan King Crab Legs',
-    img: 'https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&q=80&w=200',
-    prompt: 'Identify these colossal king crab legs with sweet juicy meat, caught via traps.'
+    name: 'African Catfish',
+    img: 'https://images.pexels.com/photos/3296286/pexels-photo-3296286.jpeg?auto=compress&fit=crop&w=200',
+    prompt: 'Identify this African Catfish from Busiime cage grid, Lake Victoria.'
   },
   {
-    name: 'European Red Lobster',
-    img: 'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&fit=crop&q=80&w=200',
-    prompt: 'Identify this European lobster with sweet firm meat and navy-red outer armor.'
+    name: 'Tilapia Fillet',
+    img: 'https://images.pexels.com/photos/3296286/pexels-photo-3296286.jpeg?auto=compress&fit=crop&w=200',
+    prompt: 'Identify this fresh tilapia fillet from Olayo Fisheries processing hub.'
   }
 ];
 
@@ -77,7 +77,7 @@ export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
             <BrainCircuit className="w-5 h-5 animate-pulse" />
           </div>
           <div>
-            <h3 className="font-display font-semibold text-white text-base">Olayo Marine AI Co-Pilot</h3>
+            <h3 className="font-display font-semibold text-white text-base">Olayo Intelligence (OI)</h3>
             <p className="text-[10px] text-cyan-300/60 font-mono">Powered by Google Gemini 3.5 Flash</p>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
         {/* If Identify tab, show preset images option */}
         {activeTab === 'identify' && !response && !loading && (
           <div className="space-y-3">
-            <div className="text-[11px] font-mono text-cyan-300/80">Select maritime biological sample to analyze:</div>
+            <div className="text-[11px] font-mono text-cyan-300/80">Select aquaculture sample to analyze:</div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {SAMPLE_IMAGES.map(img => (
                 <button
@@ -153,7 +153,7 @@ export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
                   <Fish className="w-6 h-6 text-cyan-400 animate-pulse" />
                 </div>
                 <div className="text-xs font-mono font-semibold animate-pulse">
-                  STREAMS INITIATED... RETRIEVING satellite ocean telemetry data & grading lipid structure...
+                  STREAMS INITIATED... Analyzing aquaculture telemetry data & grading quality...
                 </div>
               </motion.div>
             ) : response ? (
@@ -172,11 +172,11 @@ export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
               >
                 <HelpCircle className="w-8 h-8 text-cyan-500/20" />
                 <div>
-                  {activeTab === 'identify' && 'Select a photo above or type biological fish characteristics below to classify taxon.'}
-                  {activeTab === 'freshness' && 'Type quality data (gills red, eyes translucent, lipid content) to compute safe shelf life.'}
-                  {activeTab === 'price' && 'Specify species, harbor landings, and catches to compute spot pricing and supply forecasts.'}
-                  {activeTab === 'recipe' && 'Enter fish species to suggest Michelin gourmet cook times, ingredients, and sommelier matches.'}
-                  {activeTab === 'search' && 'Type keywords like "line-caught high omega 3" to search Olayo catalogues semantically.'}
+                  {activeTab === 'identify' && 'Select a photo above or type fish characteristics to identify the species.'}
+                  {activeTab === 'freshness' && 'Type quality data (gill color, eye clarity, firmness) to assess freshness grade.'}
+                  {activeTab === 'price' && 'Specify species and origin to get market pricing and demand forecasts.'}
+                  {activeTab === 'recipe' && 'Enter fish species for East African recipe suggestions.'}
+                  {activeTab === 'search' && 'Type keywords like "high protein, fresh water fish" to search our aquaculture catalog.'}
                 </div>
               </motion.div>
             )}
@@ -197,10 +197,10 @@ export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
               }}
               placeholder={
                 activeTab === 'identify' ? 'Describe body markings, fins, or gills...' :
-                activeTab === 'freshness' ? 'Enter gill color, odor level, or springback time...' :
-                activeTab === 'price' ? 'Enter species, port zone, and capture method...' :
-                activeTab === 'recipe' ? 'Salmon, sea bass, tuna, lobster, crab...' :
-                'Query, e.g., "Sashimi quality, high omega-3, line caught"...'
+                activeTab === 'freshness' ? 'Enter gill color, odor level, or firmness...' :
+                activeTab === 'price' ? 'Enter species and origin for market pricing...' :
+                activeTab === 'recipe' ? 'Tilapia, Nile perch, catfish...' :
+                'Query, e.g., "high protein, fresh water fish"...'
               }
               className="flex-1 bg-transparent border-0 ring-0 outline-none text-xs text-white px-3 py-2 font-sans placeholder-cyan-100/30"
             />
