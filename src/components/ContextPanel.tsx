@@ -137,7 +137,7 @@ function MissionContext({ farmStatus, sustainabilityScore, onAskOI, onNavigate }
       <PanelHeader icon={Target} title="Mission Context" subtitle="Today's priorities" />
       <div className="p-3 space-y-3">
         {/* Executive briefing */}
-        <div className="glass-luminous rounded-2xl p-3 space-y-2">
+        <div className="glass-luminous rounded-2xl p-3 space-y-2 liquid-glow">
           <div className="flex items-center gap-2">
             <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30">
               <BrainCircuit className="w-3.5 h-3.5 text-cyan-300" />
@@ -149,7 +149,7 @@ function MissionContext({ farmStatus, sustainabilityScore, onAskOI, onNavigate }
           </p>
           <button
             onClick={() => onAskOI('Prepare today\'s executive briefing with priorities, risks, and recommendations.')}
-            className="w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5"
+            className="liquid-btn w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5"
           >
             <Sparkles className="w-3 h-3" /> Full briefing
           </button>
@@ -220,7 +220,7 @@ function FarmContext({ farmStatus, facilities, onAskOI }: { farmStatus: FarmStat
         </div>
 
         {/* OI suggestions */}
-        <div className="glass-luminous rounded-2xl p-3 space-y-2">
+        <div className="glass-luminous rounded-2xl p-3 space-y-2 liquid-glow">
           <div className="flex items-center gap-2">
             <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30">
               <Lightbulb className="w-3.5 h-3.5 text-cyan-300" />
@@ -272,7 +272,7 @@ function MarketplaceContext({ onAskOI, onNavigate }: { onAskOI: (p: string) => v
         <ContextCard icon={Ship} label="Logistics" value="Busia → Kampala" sub="Cold chain -24°C" color="text-blue-400" onClick={() => onAskOI('Review logistics and delivery routes.')} />
         <ContextCard icon={Users} label="Active Customers" value="47" sub="Restaurants & retailers" color="text-teal-400" onClick={() => onAskOI('Customer segmentation and top buyers analysis.')} />
 
-        <div className="glass-luminous rounded-2xl p-3 space-y-2">
+        <div className="glass-luminous rounded-2xl p-3 space-y-2 liquid-glow">
           <div className="flex items-center gap-2">
             <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-400/30">
               <BrainCircuit className="w-3.5 h-3.5 text-amber-300" />
@@ -332,7 +332,7 @@ function IntelligenceContext({ onAskOI }: { onAskOI: (p: string) => void }) {
           ))}
         </div>
 
-        <button onClick={() => onAskOI('Show all agent reasoning and current tasks.')} className="w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5">
+        <button onClick={() => onAskOI('Show all agent reasoning and current tasks.')} className="liquid-btn w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5">
           <Eye className="w-3 h-3" /> View all reasoning
         </button>
       </div>
@@ -361,7 +361,7 @@ function AcademyContext({ onAskOI }: { onAskOI: (p: string) => void }) {
         <ContextCard icon={Award} label="Certification" value="In Progress" sub="150 pts required" color="text-amber-400" onClick={() => onAskOI('What do I need to get certified?')} />
         <ContextCard icon={GraduationCap} label="Lessons Mastered" value="2 / 3" sub="67% complete" color="text-emerald-400" onClick={() => onAskOI('Which lessons should I complete next?')} />
 
-        <div className="glass-luminous rounded-2xl p-3 space-y-2">
+        <div className="glass-luminous rounded-2xl p-3 space-y-2 liquid-glow">
           <div className="flex items-center gap-2">
             <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30">
               <BrainCircuit className="w-3.5 h-3.5 text-cyan-300" />
@@ -404,7 +404,7 @@ function GenericContext({ tab, onAskOI }: { tab: string; onAskOI: (p: string) =>
     <div>
       <PanelHeader icon={Sparkles} title={labels[tab] || 'Workspace'} subtitle="OI Context" />
       <div className="p-3 space-y-3">
-        <div className="glass-luminous rounded-2xl p-3 space-y-2">
+        <div className="glass-luminous rounded-2xl p-3 space-y-2 liquid-glow">
           <div className="flex items-center gap-2">
             <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/30">
               <BrainCircuit className="w-3.5 h-3.5 text-cyan-300" />
@@ -416,7 +416,7 @@ function GenericContext({ tab, onAskOI }: { tab: string; onAskOI: (p: string) =>
           </p>
           <button
             onClick={() => onAskOI(`Provide an overview of ${labels[tab] || tab} and what I can do here.`)}
-            className="w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5"
+            className="liquid-btn w-full py-2 rounded-xl bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5"
           >
             <Sparkles className="w-3 h-3" /> Ask OI for overview
           </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BrainCircuit, Sparkles, Send, Paperclip, Mic, Camera, FileText, ChevronDown, ChevronUp, Download, Code, FileSpreadsheet, FileType, Printer, X, Eye, GitBranch, Database, Network, Target, Lightbulb, Settings2, Zap, TrendingUp, ShieldCheck, Fish, Droplets, Activity, RefreshCw, CircleCheck as CheckCircle, ArrowRight, Layers, FileJson, FileCode } from 'lucide-react';
+import { BrainCircuit, Sparkles, Send, Paperclip, Mic, Camera, FileText, ChevronDown, ChevronUp, Download, Code, FileSpreadsheet, FileType, Printer, X, Eye, GitBranch, Database, Network, Target, Lightbulb, Settings2, Zap, TrendingUp, ShieldCheck, Fish, Droplets, Activity, RefreshCw, CircleCheck as CheckCircle, ArrowRight, Layers, FileJson, FileCode, Leaf } from 'lucide-react';
+import { WaveReveal } from './LiquidUX';
 
 interface AIPlaygroundProps {
   initialQuery?: string;
@@ -122,7 +123,7 @@ export default function AIPlayground({ initialQuery, onQueryConsumed, farmContex
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-200px)] min-h-[500px]">
       {/* LEFT: Conversation */}
-      <div className="glass-strong rounded-3xl flex flex-col overflow-hidden border border-cyan-500/15">
+      <div className="glass-strong rounded-3xl flex flex-col overflow-hidden border border-cyan-500/15 liquid-glow">
         {/* Header */}
         <div className="px-4 py-3 border-b border-cyan-500/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -302,7 +303,7 @@ export default function AIPlayground({ initialQuery, onQueryConsumed, farmContex
             <button
               onClick={() => handleSend()}
               disabled={!input.trim()}
-              className="p-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="liquid-btn p-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <Send className="w-3.5 h-3.5" />
             </button>
@@ -311,7 +312,7 @@ export default function AIPlayground({ initialQuery, onQueryConsumed, farmContex
       </div>
 
       {/* RIGHT: Live preview / dual panel */}
-      <div className="glass-strong rounded-3xl flex flex-col overflow-hidden border border-cyan-500/15">
+      <div className="glass-strong rounded-3xl flex flex-col overflow-hidden border border-cyan-500/15 liquid-glow">
         <div className="px-4 py-3 border-b border-cyan-500/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-400/20">

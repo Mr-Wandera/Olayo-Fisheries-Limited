@@ -1,12 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lesson, UserProfile } from '../types';
-import {
-  BookOpen, Award, CircleCheck as CheckCircle, ArrowRight, Play, Sparkles, Bookmark,
-  BrainCircuit, GraduationCap, Fish, Droplets, Activity, Shield, X, Trophy, Target,
-  Lightbulb, Eye, ChevronRight, Clock, Leaf, Zap, Microscope, FlaskConical,
-  Stethoscope, Compass, Lock, Star, TrendingUp, Atom, Thermometer, Beaker, AlertTriangle
-} from 'lucide-react';
+import { WaveReveal } from './LiquidUX';
+import { BookOpen, Award, CircleCheck as CheckCircle, ArrowRight, Play, Sparkles, Bookmark, BrainCircuit, GraduationCap, Fish, Droplets, Activity, Shield, X, Trophy, Target, Lightbulb, Eye, ChevronRight, Clock, Leaf, Zap, Microscope, FlaskConical, Stethoscope, Compass, Lock, Star, TrendingUp, Atom, Thermometer, Beaker, TriangleAlert as AlertTriangle } from 'lucide-react';
 
 interface LearningCenterProps {
   lessons: Lesson[];
@@ -70,6 +66,7 @@ export default function LearningCenter({ lessons, currentUser, onUserCertified, 
   return (
     <div className="space-y-6">
       {/* Header */}
+      <WaveReveal>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -90,7 +87,7 @@ export default function LearningCenter({ lessons, currentUser, onUserCertified, 
               <button
                 key={v.id}
                 onClick={() => setView(v.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === v.id ? 'text-cyan-300 bg-cyan-500/10' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`liquid-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === v.id ? 'text-cyan-300 bg-cyan-500/10' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {v.label}
@@ -99,6 +96,7 @@ export default function LearningCenter({ lessons, currentUser, onUserCertified, 
           })}
         </div>
       </motion.div>
+      </WaveReveal>
 
       <AnimatePresence mode="wait">
         {view === 'lessons' && (
@@ -418,7 +416,7 @@ function AITutorCard({ onAskOI }: { onAskOI?: (p: string) => void }) {
     'Why is cold chain important?',
   ];
   return (
-    <div className="glass-luminous rounded-2xl p-5 space-y-3">
+    <div className="glass-luminous rounded-2xl p-5 space-y-3 liquid-glow">
       <div className="flex items-center gap-2">
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}

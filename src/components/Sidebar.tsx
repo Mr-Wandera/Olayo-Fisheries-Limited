@@ -181,7 +181,7 @@ export default function Sidebar({ activeTab, onTabChanged, onAskOI, recentSearch
         <div className="border-t border-cyan-500/10 p-2">
           <button
             onClick={onToggleCollapse}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-slate-500 hover:text-cyan-300 hover:bg-cyan-500/5 transition-all"
+            className="liquid-btn w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-slate-500 hover:text-cyan-300 hover:bg-cyan-500/5 transition-all"
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <><ChevronLeft className="w-4 h-4" /> <span className="text-[10px] font-mono">Collapse</span></>}
           </button>

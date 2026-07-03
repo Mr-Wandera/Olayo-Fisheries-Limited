@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FarmStatus } from '../types';
 
@@ -18,13 +18,15 @@ interface LivingFarmBackgroundProps {
  *   4. Stars (night only)
  *   5. Distant shoreline hills
  *   6. Lake water (animated SVG waves + shimmer)
- *   7. Fish shadows beneath cages
- *   8. Floating cage grid
+ *   7. Fish shadows beneath cages (scatter on cursor proximity)
+ *   8. Floating cage grid (buoyancy)
  *   9. Boats with wakes
  *   10. Dock + onshore infrastructure
  *   11. Workers, trucks, birds
  *   12. Weather overlay (rain, lightning)
  *   13. Ambient light wash (golden hour, etc.)
+ *   14. Cursor ripples on water
+ *   15. Floating leaves, morning mist, moonlight shimmer
  */
 export default function LivingFarmBackground({ farmStatus, sustainabilityScore }: LivingFarmBackgroundProps) {
   const weather = farmStatus?.weather || 'clear';
@@ -47,7 +49,6 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
     return { top: '#022144', mid: '#03448a', bot: '#01162d' };
   }, [isStorm, isNight, isGolden, isMorning]);
 
-  // Generate stable random elements
   const stars = useMemo(() => Array.from({ length: 40 }).map((_, i) => ({
     id: i, x: Math.random() * 100, y: Math.random() * 30,
     size: Math.random() * 1.5 + 0.5, delay: Math.random() * 3,
@@ -77,6 +78,12 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
     id: i, x: 15 + i * 12, delay: i * 3, dur: 8 + i * 2,
   })), []);
 
+  // Floating leaves
+  const leaves = useMemo(() => Array.from({ length: 4 }).map((_, i) => ({
+    id: i, x: Math.random() * 100, delay: Math.random() * 15,
+    dur: 20 + Math.random() * 15, size: 6 + Math.random() * 6,
+  })), []);
+
   // Lightning flash state
   const [flash, setFlash] = useState(false);
   useEffect(() => {
@@ -91,6 +98,30 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
     return () => clearInterval(t);
   }, [isStorm]);
 
+  // Cursor ripple on water
+  const [waterRipples, setWaterRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const rippleIdRef = useRef(0);
+  const lastRippleTime = useRef(0);
+
+  const handleWaterHover = useCallback((e: React.MouseEvent) => {
+    const now = performance.now();
+    if (now - lastRippleTime.current < 200) return;
+    lastRippleTime.current = now;
+    const id = rippleIdRef.current++;
+    setWaterRipples(prev => [...prev.slice(-5), { id, x: e.clientX, y: e.clientY }]);
+    setTimeout(() => setWaterRipples(prev => prev.filter(r => r.id !== id)), 1500);
+  }, []);
+
+  // Fish scatter state — when cursor is near, fish swim faster
+  const [fishScatter, setFishScatter] = useState(false);
+  const scatterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleFishProximity = useCallback((e: React.MouseEvent) => {
+    setFishScatter(true);
+    if (scatterTimeoutRef.current) clearTimeout(scatterTimeoutRef.current);
+    scatterTimeoutRef.current = setTimeout(() => setFishScatter(false), 800);
+  }, []);
+
   // Cage positions on the lake
   const cages = farmStatus?.cages || [];
   const cagePositions = [
@@ -99,7 +130,13 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
   ];
 
   return (
-    <div className="fixed inset-0 -z-50 overflow-hidden bg-slate-950">
+    <div
+      className="fixed inset-0 -z-50 overflow-hidden bg-slate-950"
+      onMouseMove={(e) => {
+        handleWaterHover(e);
+        handleFishProximity(e);
+      }}
+    >
       {/* 1. Sky gradient */}
       <div
         className="absolute inset-0 transition-all duration-1000"
@@ -209,7 +246,7 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
           />
         ))}
 
-        {/* Fish shadows beneath cages */}
+        {/* Fish shadows beneath cages — scatter on cursor proximity */}
         {fishShadows.map(f => (
           <motion.div
             key={f.id}
@@ -217,16 +254,41 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
             style={{ top: `${f.y}%` }}
             initial={{ x: '-10%' }}
             animate={{ x: '110%' }}
-            transition={{ duration: f.dur, repeat: Infinity, delay: f.delay, ease: 'linear' }}
+            transition={{
+              duration: fishScatter ? f.dur * 0.3 : f.dur,
+              repeat: Infinity, delay: f.delay, ease: fishScatter ? 'easeOut' : 'linear',
+            }}
           >
             <div className="opacity-20 text-slate-600" style={{ width: f.size, height: f.size * 0.5 }}>
               <svg viewBox="0 0 100 50" fill="currentColor"><path d="M10,25 C30,10 65,10 80,25 C75,28 75,32 80,25 C85,20 95,15 95,25 C95,35 85,30 80,25 C65,40 30,40 10,25 Z" /></svg>
             </div>
           </motion.div>
         ))}
+
+        {/* Cursor ripples on water */}
+        <div className="absolute inset-0 pointer-events-none">
+          <AnimatePresence>
+            {waterRipples.map(r => (
+              <motion.div
+                key={r.id}
+                initial={{ scale: 0, opacity: 0.4 }}
+                animate={{ scale: 4, opacity: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                className="absolute rounded-full border border-cyan-300/30"
+                style={{
+                  left: r.x - 30,
+                  top: r.y - 30,
+                  width: 60,
+                  height: 60,
+                }}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* 6. Floating cage grid */}
+      {/* 6. Floating cage grid — buoyancy animation */}
       {cages.slice(0, 6).map((cage, i) => {
         const pos = cagePositions[i % cagePositions.length];
         const healthy = cage.healthScore >= 85;
@@ -392,10 +454,57 @@ export default function LivingFarmBackground({ farmStatus, sustainabilityScore }
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(251,191,36,0.04) 0%, transparent 40%)' }} />
       )}
 
-      {/* 14. Vignette for depth */}
+      {/* 14. Morning mist */}
+      {isMorning && (
+        <>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <motion.div
+              key={`mist-${i}`}
+              className="absolute pointer-events-none"
+              style={{ top: `${35 + i * 5}%`, height: '8%', width: '120%' }}
+              initial={{ x: '-20%' }}
+              animate={{ x: '20%' }}
+              transition={{ duration: 25 + i * 5, repeat: Infinity, delay: i * 3, ease: 'easeInOut' }}
+            >
+              <div className="w-full h-full" style={{ background: 'linear-gradient(to right, transparent, rgba(34,211,238,0.06), transparent)', filter: 'blur(30px)' }} />
+            </motion.div>
+          ))}
+        </>
+      )}
+
+      {/* 15. Moonlight shimmer at night */}
+      {isNight && (
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{ top: '15%', right: '20%', width: 300, height: 40 }}
+          animate={{ opacity: [0.08, 0.15, 0.08], x: [0, 20, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <div className="w-full h-full" style={{ background: 'linear-gradient(to right, transparent, rgba(129,140,248,0.15), transparent)', filter: 'blur(20px)' }} />
+        </motion.div>
+      )}
+
+      {/* 16. Floating leaves */}
+      {leaves.map(l => (
+        <motion.div
+          key={`leaf-${l.id}`}
+          className="absolute pointer-events-none"
+          style={{ left: `${l.x}%`, top: '-5%' }}
+          initial={{ y: 0, rotate: 0, opacity: 0 }}
+          animate={{ y: '110vh', rotate: 360, opacity: [0, 0.3, 0.3, 0] }}
+          transition={{ duration: l.dur, repeat: Infinity, delay: l.delay, ease: 'linear' }}
+        >
+          <svg width={l.size} height={l.size * 0.6} viewBox="0 0 20 12" fill="none">
+            <path d="M2,6 Q10,2 18,6 Q10,10 2,6 Z" fill="rgba(20,184,166,0.3)" stroke="rgba(20,184,166,0.4)" strokeWidth="0.3" />
+            <line x1="2" y1="6" x2="18" y2="6" stroke="rgba(20,184,166,0.3)" strokeWidth="0.3" />
+          </svg>
+        </motion.div>
+      ))}
+
+      {/* 17. Vignette for depth */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(2,6,23,0.4) 100%)' }} />
 
-      {/* 15. Sustainability reef indicator — subtle growth at lake bottom */}
+      {/* 18. Sustainability reef indicator — subtle growth at lake bottom */}
       {sustainabilityScore >= 80 && (
         <div className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none flex justify-between px-8 opacity-15">
           <svg width="60" height="80" viewBox="0 0 60 80" style={{ color: '#14b8a6' }}>

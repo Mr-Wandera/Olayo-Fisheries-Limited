@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FarmStatus } from '../types';
+import { WaveReveal, NumberRoll } from './LiquidUX';
 import { BrainCircuit, Leaf, Activity, TrendingUp, ShieldCheck, Fish, Droplets, Wrench, ShoppingCart, GraduationCap, Users, DollarSign, Sparkles, Zap, Eye, ChevronRight, Cpu, Network, Clock, CircleCheck as CheckCircle2, ArrowRight, MessageSquare, GitBranch, Layers, Target, TriangleAlert as AlertTriangle, Lightbulb, Database, Send, X, Radio } from 'lucide-react';
 import AiAssistant from './AiAssistant';
 
@@ -144,6 +145,7 @@ export default function Intelligence({ sustainabilityScore, initialQuery, onQuer
   return (
     <div className="space-y-6">
       {/* Header */}
+      <WaveReveal>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -157,9 +159,10 @@ export default function Intelligence({ sustainabilityScore, initialQuery, onQuer
           <p className="text-xs text-slate-400 font-sans">Your digital executive team — 24/7 AI agents monitoring and optimizing the farm</p>
         </div>
       </motion.div>
+      </WaveReveal>
 
       {/* OI Briefing */}
-      <div className="glass-luminous rounded-3xl p-5 space-y-3 relative overflow-hidden">
+      <div className="glass-luminous rounded-3xl p-5 space-y-3 relative overflow-hidden liquid-glow">
         <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-breathe" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
@@ -201,7 +204,7 @@ export default function Intelligence({ sustainabilityScore, initialQuery, onQuer
           </h3>
           <button
             onClick={() => setShowReasoning(!showReasoning)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/20 transition-all"
+            className="liquid-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold hover:bg-cyan-500/20 transition-all"
           >
             <Eye className="w-3.5 h-3.5" /> {showReasoning ? 'Hide' : 'Show'} Reasoning
           </button>
@@ -306,7 +309,7 @@ function AgentCard({ agent, idx, onClick }: { agent: Agent; idx: number; onClick
 /* ============ REASONING VISUALIZATION ============ */
 function ReasoningVisualization({ activeStep }: { activeStep: number }) {
   return (
-    <div className="glass-luminous rounded-3xl p-6 relative overflow-hidden">
+    <div className="glass-luminous rounded-3xl p-6 relative overflow-hidden liquid-glow">
       <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl" />
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">

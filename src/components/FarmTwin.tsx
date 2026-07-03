@@ -120,7 +120,7 @@ export default function FarmTwin({ boats, facilities, onAskOI }: FarmTwinProps) 
           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 text-xs font-bold">
             <Radio className="w-3.5 h-3.5" /> LIVE
           </span>
-          <button onClick={fetchStatus} className="p-2 rounded-xl bg-slate-900 border border-cyan-500/15 text-cyan-400 hover:bg-slate-800 transition-all">
+          <button onClick={fetchStatus} className="p-2 rounded-xl bg-slate-900 border border-cyan-500/15 text-cyan-400 hover:bg-slate-800 transition-all liquid-btn">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function FarmTwin({ boats, facilities, onAskOI }: FarmTwinProps) 
 
       {/* Interactive Satellite Map */}
       <div
-        className="relative rounded-3xl overflow-hidden border border-cyan-500/20 glass"
+        className="relative rounded-3xl overflow-hidden border border-cyan-500/20 glass liquid-glow"
         style={{ height: '520px', cursor: isDragging ? 'grabbing' : 'grab' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -710,7 +710,7 @@ function ColdChainPanel({ facilities, onSelectFacility }: { facilities: ColdChai
 /* ============ DAILY SUMMARY ============ */
 function DailySummary({ status, onAskOI }: { status: FarmStatus; onAskOI?: (p: string) => void }) {
   return (
-    <div className="glass-luminous rounded-3xl p-5 space-y-3">
+    <div className="glass-luminous rounded-3xl p-5 space-y-3 liquid-glow">
       <div className="flex items-center gap-2">
         <Gauge className="w-5 h-5 text-cyan-400" />
         <h3 className="font-display font-semibold text-white text-sm">Daily Operations Summary</h3>

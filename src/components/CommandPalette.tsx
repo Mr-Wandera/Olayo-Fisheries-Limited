@@ -100,7 +100,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, onAskOI, r
     active?.scrollIntoView({ block: 'nearest' });
   }, [activeIdx]);
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<Record<string, CommandItem[]>>(() => {
     const groups: Record<string, CommandItem[]> = {};
     filtered.forEach(c => {
       if (!groups[c.category]) groups[c.category] = [];
@@ -155,7 +155,7 @@ export default function CommandPalette({ isOpen, onClose, onNavigate, onAskOI, r
 
             {/* Results */}
             <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
-              {Object.entries(grouped).map(([cat, items]) => (
+              {Object.entries(grouped).map(([cat, items]: [string, CommandItem[]]) => (
                 <div key={cat} className="mb-2">
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-cyan-400/60 flex items-center gap-1.5">
                     {cat === 'intelligence' && <Sparkles className="w-3 h-3" />}

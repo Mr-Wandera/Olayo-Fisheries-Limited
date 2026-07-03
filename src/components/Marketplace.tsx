@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, CartItem, Order, UserProfile } from '../types';
+import { WaveReveal } from './LiquidUX';
 import { Search, ShoppingCart, Heart, Plus, Minus, X, Shield, CircleCheck as CheckCircle2, ChevronRight, Download, Package, TrendingUp, TrendingDown, Sparkles, BrainCircuit, MapPin, Clock, Gauge, Fish, ChefHat, DollarSign, ArrowRight, Activity, Zap, Eye, Star, ListFilter as Filter, SlidersHorizontal, Leaf, Snowflake, Truck, Navigation, Thermometer, Droplets, Anchor, Award, Utensils } from 'lucide-react';
 
 interface MarketplaceProps {
@@ -110,7 +111,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="glass-luminous rounded-3xl p-5 relative overflow-hidden"
+            className="glass-luminous rounded-3xl p-5 relative overflow-hidden liquid-glow"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl animate-breathe" />
             <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -131,7 +132,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onAskOI?.('Review marketplace pricing and suggest adjustments based on demand.')}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-semibold hover:bg-amber-500/25 transition-all"
+                  className="liquid-btn px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-semibold hover:bg-amber-500/25 transition-all"
                 >
                   Review pricing
                 </button>
@@ -191,7 +192,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
             </h3>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 transition-all flex items-center gap-1.5 text-xs font-semibold"
+              className="liquid-btn relative p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 transition-all flex items-center gap-1.5 text-xs font-semibold"
             >
               <ShoppingCart className="w-4 h-4" /> Cart
               {cart.length > 0 && (
@@ -538,7 +539,7 @@ function RecentlyViewedPanel({ products, onOpen }: { products: Product[]; onOpen
 /* ============ COLD CHAIN STAMP ============ */
 function ColdChainStamp() {
   return (
-    <div className="glass-luminous rounded-2xl p-4 space-y-2">
+    <div className="glass-luminous rounded-2xl p-4 space-y-2 liquid-glow">
       <div className="flex items-center gap-2">
         <Snowflake className="w-5 h-5 text-blue-400" />
         <h4 className="font-display font-semibold text-white text-xs">Cold Chain Certified</h4>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FarmEvent, FarmStatus } from '../types';
+import { NumberRoll, WaveReveal } from './LiquidUX';
 import {
   Activity, Droplets, Waves, Wind, Thermometer, Fish, Users, Ship, ShoppingCart,
   DollarSign, Leaf, BrainCircuit, Wrench, GraduationCap, Heart, TriangleAlert as AlertTriangle,
@@ -125,6 +126,7 @@ export default function MissionControl({ sustainabilityScore, onAskOI, onNavigat
   return (
     <section className="space-y-6">
       {/* Cinematic header */}
+      <WaveReveal>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -148,20 +150,21 @@ export default function MissionControl({ sustainabilityScore, onAskOI, onNavigat
           <FocusSelector focus={focusPanel} onChange={setFocusPanel} detected={detectedFocus} />
           <button
             onClick={() => setIsLive(!isLive)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${isLive ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-400' : 'bg-slate-950 border-cyan-500/15 text-slate-400'}`}
+            className={`liquid-btn px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${isLive ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-400' : 'bg-slate-950 border-cyan-500/15 text-slate-400'}`}
           >
             <Radio className="w-3.5 h-3.5" />
             {isLive ? 'LIVE' : 'PAUSED'}
           </button>
           <button
             onClick={tick}
-            className="p-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all"
+            className="p-2 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-all liquid-btn"
             title="Advance simulation"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
         </div>
       </motion.div>
+      </WaveReveal>
 
       {/* Adaptive focus panel — floating information island */}
       <AnimatePresence mode="wait">
@@ -242,7 +245,7 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
     const isStorm = status.weather === 'storm';
     const isRain = status.weather === 'rain';
     return (
-      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 ${isStorm ? 'bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 border border-blue-500/30' : isRain ? 'bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-950 border border-cyan-500/25' : 'glass-luminous'}`}>
+      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 liquid-glow ${isStorm ? 'bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 border border-blue-500/30' : isRain ? 'bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-950 border border-cyan-500/25' : 'glass-luminous'}`}>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-breathe" />
         </div>
@@ -292,12 +295,12 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
 
   if (focus === 'production') {
     return (
-      <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+      <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden liquid-glow">
         <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-breathe" />
         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-emerald-400/70 mb-2">Total Biomass</div>
-            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl">{(status.totalBiomassKg / 1000).toFixed(1)}t</div>
+            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl"><NumberRoll value={status.totalBiomassKg / 1000} />t</div>
             <div className="text-xs text-slate-400 mt-1">{status.totalPopulation.toLocaleString()} fish across {status.activeCages} cages</div>
             <div className="flex items-center gap-1 mt-2 text-[10px] font-mono text-emerald-400">
               <TrendingUp className="w-3 h-3" /> +2.4% vs last week
@@ -305,7 +308,7 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
           </div>
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400/70 mb-2">Feed Today</div>
-            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl">{status.todayFeedKg}<span className="text-base text-slate-400">kg</span></div>
+            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl"><NumberRoll value={status.todayFeedKg} /><span className="text-base text-slate-400">kg</span></div>
             <div className="text-xs text-slate-400 mt-1">FCR holding at 1.32</div>
             <div className="flex items-center gap-1 mt-2 text-[10px] font-mono text-cyan-400">
               <Activity className="w-3 h-3" /> Optimal distribution
@@ -313,7 +316,7 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
           </div>
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-rose-400/70 mb-2">Mortality Today</div>
-            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl">{status.todayMortality}</div>
+            <div className="font-display font-extrabold text-white text-3xl sm:text-4xl"><NumberRoll value={status.todayMortality} /></div>
             <div className="text-xs text-slate-400 mt-1">Within natural baseline</div>
             <div className="flex items-center gap-1 mt-2 text-[10px] font-mono text-emerald-400">
               <CheckCircle2 className="w-3 h-3" /> No anomalies
@@ -334,14 +337,14 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
 
   if (focus === 'market') {
     return (
-      <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+      <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden liquid-glow">
         <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl animate-breathe" />
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400/70 mb-2">Marketplace Intelligence</div>
             <h4 className="font-display font-bold text-white text-xl">{status.pendingOrders} pending orders</h4>
             <p className="text-xs text-slate-400 mt-1">Today's confirmed revenue</p>
-            <div className="font-display font-extrabold text-emerald-400 text-3xl mt-1">${status.todayRevenue.toFixed(0)}<span className="text-base text-slate-500"> USD</span></div>
+            <div className="font-display font-extrabold text-emerald-400 text-3xl mt-1">$<NumberRoll value={status.todayRevenue} /><span className="text-base text-slate-500"> USD</span></div>
           </div>
           <div className="flex flex-col gap-2 text-xs">
             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-950/60 border border-cyan-500/15">
@@ -371,7 +374,7 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
   if (focus === 'quality') {
     const isLowO2 = status.dissolvedOxygenMgL < 5.5;
     return (
-      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 ${isLowO2 ? 'bg-gradient-to-br from-slate-900 via-orange-950/40 to-slate-950 border border-orange-500/30' : 'glass-luminous'}`}>
+      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 liquid-glow ${isLowO2 ? 'bg-gradient-to-br from-slate-900 via-orange-950/40 to-slate-950 border border-orange-500/30' : 'glass-luminous'}`}>
         <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-breathe" />
         <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
           <QualityMetric icon={Droplets} label="Dissolved O₂" value={`${status.dissolvedOxygenMgL}`} unit="mg/L" status={isLowO2 ? 'warning' : 'good'} />
@@ -396,7 +399,7 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }:
   }
 
   return (
-    <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+    <div className="glass-luminous rounded-3xl p-6 sm:p-8 relative overflow-hidden liquid-glow">
       <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-breathe" />
       <div className="relative z-10 flex items-start gap-4">
         <motion.div
@@ -684,7 +687,7 @@ function CageVitals({ status, onAskOI }: { status: FarmStatus | null; onAskOI?: 
 function OIBriefing({ status, sustainabilityScore, onAskOI }: { status: FarmStatus | null; sustainabilityScore: number; onAskOI?: (p: string) => void }) {
   const [thinking, setThinking] = useState(false);
   return (
-    <div className="glass-luminous rounded-3xl p-5 space-y-3 relative overflow-hidden">
+    <div className="glass-luminous rounded-3xl p-5 space-y-3 relative overflow-hidden liquid-glow">
       <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl" />
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-2">

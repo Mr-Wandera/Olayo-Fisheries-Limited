@@ -111,7 +111,7 @@ export default function TopCommandBar({ activeTab, onOpenCommand, onAskOI, farmS
             </kbd>
             <button
               onClick={(e) => { e.stopPropagation(); onOpenCommand(); }}
-              className="p-1 rounded-lg text-slate-500 hover:text-cyan-300 transition-colors"
+              className="liquid-btn p-1 rounded-lg text-slate-500 hover:text-cyan-300 transition-colors"
             >
               <Command className="w-3.5 h-3.5" />
             </button>
