@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783052209658_4628",
+      "timestamp": "2026-07-03T04:16:49.658Z",
+      "category": "marketplace",
+      "title": "Marketplace order confirmed",
+      "description": "Wholesale order from Kampala Fresh Distributors confirmed for 220 kg Nile Tilapia. Invoice INV-7025. Pending orders now 3.",
+      "actor": "Dr. Amina Nakato",
+      "location": "Vigo Export Desk",
+      "severity": "success"
+    },
+    {
       "id": "evt_1783052156106_1486",
       "timestamp": "2026-07-03T04:15:56.106Z",
       "category": "feeding",
