@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783049598640_4565",
+      "timestamp": "2026-07-03T03:33:18.640Z",
+      "category": "fleet",
+      "title": "Vessel MV Tilapia Express departed Busiime dock",
+      "description": "MV Tilapia Express underway for routine cage inspection and feeding run. ETA return 14:30 EAT. Crew of 4, fuel 78%.",
+      "actor": "Engineer Elena Rostova",
+      "location": "Busiime Cage Grid",
+      "severity": "info"
+    },
+    {
       "id": "evt_1783049171030_7219",
       "timestamp": "2026-07-03T03:26:11.030Z",
       "category": "ai",
