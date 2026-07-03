@@ -6,7 +6,7 @@ import {
   DollarSign, Leaf, BrainCircuit, Wrench, GraduationCap, Heart, TriangleAlert as AlertTriangle,
   CircleCheck as CheckCircle2, Info, Cloud, CloudRain, CloudLightning, Sun, Clock, RefreshCw,
   Radio, TrendingUp, TrendingDown, ArrowUpRight, Sparkles, Gauge, Zap, Eye, ChevronRight, Compass,
-  ShieldCheck
+  ShieldCheck, Satellite, Radar
 } from 'lucide-react';
 
 const CATEGORY_META: Record<string, { icon: React.ElementType; color: string; label: string; bg: string }> = {
@@ -48,9 +48,10 @@ function clockTime(iso: string): string {
 interface MissionControlProps {
   sustainabilityScore: number;
   onAskOI?: (prompt: string) => void;
+  onNavigate?: (tab: string) => void;
 }
 
-export default function MissionControl({ sustainabilityScore, onAskOI }: MissionControlProps) {
+export default function MissionControl({ sustainabilityScore, onAskOI, onNavigate }: MissionControlProps) {
   const [status, setStatus] = useState<FarmStatus | null>(null);
   const [events, setEvents] = useState<FarmEvent[]>([]);
   const [now, setNow] = useState<number>(Date.now());
@@ -58,6 +59,7 @@ export default function MissionControl({ sustainabilityScore, onAskOI }: Mission
   const [lastTickAt, setLastTickAt] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [focusPanel, setFocusPanel] = useState<'auto' | 'weather' | 'production' | 'market' | 'quality'>('auto');
+  const [selectedEvent, setSelectedEvent] = useState<FarmEvent | null>(null);
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -122,6 +124,7 @@ export default function MissionControl({ sustainabilityScore, onAskOI }: Mission
 
   return (
     <section className="space-y-6">
+      {/* Cinematic header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -160,6 +163,7 @@ export default function MissionControl({ sustainabilityScore, onAskOI }: Mission
         </div>
       </motion.div>
 
+      {/* Adaptive focus panel — floating information island */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeFocus}
@@ -168,25 +172,38 @@ export default function MissionControl({ sustainabilityScore, onAskOI }: Mission
           exit={{ opacity: 0, y: -8, scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 280, damping: 30 }}
         >
-          <FocusPanel focus={activeFocus} status={status} sustainabilityScore={sustainabilityScore} onAskOI={onAskOI} />
+          <FocusPanel focus={activeFocus} status={status} sustainabilityScore={sustainabilityScore} onAskOI={onAskOI} onNavigate={onNavigate} />
         </motion.div>
       </AnimatePresence>
 
-      {status && <VitalFlow status={status} />}
+      {/* Operations map — mini satellite view */}
+      {status && <OperationsMap status={status} onAskOI={onAskOI} onNavigate={onNavigate} />}
 
+      {/* Vital stream — floating metric islands instead of grid */}
+      {status && <VitalStream status={status} onAskOI={onAskOI} />}
+
+      {/* Main workspace — timeline + side panels */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <LivingTimeline events={events} loading={loading} now={now} lastTickAt={lastTickAt} />
+          <LivingTimeline events={events} loading={loading} now={now} lastTickAt={lastTickAt} onSelectEvent={setSelectedEvent} />
         </div>
         <div className="space-y-6">
-          <CageVitals status={status} />
+          <CageVitals status={status} onAskOI={onAskOI} />
           <OIBriefing status={status} sustainabilityScore={sustainabilityScore} onAskOI={onAskOI} />
         </div>
       </div>
+
+      {/* Event detail drawer */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <EventDetailDrawer event={selectedEvent} onClose={() => setSelectedEvent(null)} onAskOI={onAskOI} />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
 
+/* ============ FOCUS SELECTOR ============ */
 function FocusSelector({ focus, onChange, detected }: { focus: string; onChange: (f: any) => void; detected: string }) {
   const options = [
     { id: 'auto', label: 'Auto', icon: Sparkles },
@@ -217,7 +234,8 @@ function FocusSelector({ focus, onChange, detected }: { focus: string; onChange:
   );
 }
 
-function FocusPanel({ focus, status, sustainabilityScore, onAskOI }: { focus: string; status: FarmStatus | null; sustainabilityScore: number; onAskOI?: (p: string) => void }) {
+/* ============ FOCUS PANEL ============ */
+function FocusPanel({ focus, status, sustainabilityScore, onAskOI, onNavigate }: { focus: string; status: FarmStatus | null; sustainabilityScore: number; onAskOI?: (p: string) => void; onNavigate?: (t: string) => void }) {
   if (!status) return null;
 
   if (focus === 'weather') {
@@ -336,6 +354,16 @@ function FocusPanel({ focus, status, sustainabilityScore, onAskOI }: { focus: st
             </div>
           </div>
         </div>
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate('marketplace')}
+            className="relative z-10 mt-4 flex items-center gap-1.5 text-xs text-amber-300 hover:text-amber-200 font-semibold group"
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            Open seafood exchange
+            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        )}
       </div>
     );
   }
@@ -409,26 +437,112 @@ function QualityMetric({ icon: Icon, label, value, unit, status }: { icon: any; 
   );
 }
 
-function VitalFlow({ status }: { status: FarmStatus }) {
+/* ============ OPERATIONS MAP — mini satellite radar ============ */
+function OperationsMap({ status, onAskOI, onNavigate }: { status: FarmStatus; onAskOI?: (p: string) => void; onNavigate?: (t: string) => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 }}
+      className="glass rounded-3xl p-5 relative overflow-hidden"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Radar className="w-4 h-4 text-cyan-400" />
+          <h4 className="font-display font-semibold text-white text-sm">Operations Radar</h4>
+          <span className="text-[10px] font-mono text-slate-500">· {status.activeCages} cages · {status.boatsActive} vessels</span>
+        </div>
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate('farm')}
+            className="flex items-center gap-1 text-[10px] font-mono text-cyan-300 hover:text-cyan-200"
+          >
+            <Satellite className="w-3 h-3" /> Open full twin <ChevronRight className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+
+      {/* Mini radar SVG */}
+      <div className="relative h-32 rounded-2xl bg-slate-950/60 border border-cyan-500/10 overflow-hidden">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 100">
+          {/* Radar rings */}
+          {[20, 35, 50].map(r => (
+            <circle key={r} cx="100" cy="50" r={r} fill="none" stroke="rgba(34,211,238,0.08)" strokeWidth="0.5" />
+          ))}
+          <line x1="0" y1="50" x2="200" y2="50" stroke="rgba(34,211,238,0.05)" strokeWidth="0.5" />
+          <line x1="100" y1="0" x2="100" y2="100" stroke="rgba(34,211,238,0.05)" strokeWidth="0.5" />
+          {/* Sweep */}
+          <motion.line
+            x1="100" y1="50" x2="150" y2="50"
+            stroke="rgba(34,211,238,0.3)" strokeWidth="1"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            style={{ transformOrigin: '100px 50px' }}
+          />
+        </svg>
+        {/* Cage dots */}
+        {status.cages.slice(0, 6).map((c, i) => {
+          const angle = (i / 6) * Math.PI * 2;
+          const r = 25;
+          return (
+            <motion.div
+              key={c.id}
+              className="absolute w-2 h-2 rounded-full"
+              style={{
+                left: `calc(50% + ${Math.cos(angle) * r}px)`,
+                top: `calc(50% + ${Math.sin(angle) * r * 0.5}px)`,
+                transform: 'translate(-50%, -50%)',
+              }}
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+            >
+              <div className={`w-full h-full rounded-full ${c.healthScore >= 90 ? 'bg-emerald-400' : c.healthScore >= 80 ? 'bg-cyan-400' : 'bg-orange-400'}`} />
+            </motion.div>
+          );
+        })}
+        {/* Center */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 mt-3 text-[10px] font-mono">
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" /> Healthy
+        </div>
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <span className="w-2 h-2 rounded-full bg-cyan-400" /> Monitor
+        </div>
+        <div className="flex items-center gap-1.5 text-slate-400">
+          <span className="w-2 h-2 rounded-full bg-orange-400" /> Alert
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ============ VITAL STREAM — floating metric islands ============ */
+function VitalStream({ status, onAskOI }: { status: FarmStatus; onAskOI?: (p: string) => void }) {
   const vitals = [
-    { icon: Thermometer, label: 'Lake Temp', value: `${status.lakeTempC}°C`, sub: `ambient ${status.ambientTempC}°C`, accent: 'text-orange-400', trend: '+0.2' },
-    { icon: Droplets, label: 'Dissolved O₂', value: `${status.dissolvedOxygenMgL}`, sub: 'mg/L', accent: 'text-cyan-400', pulse: status.dissolvedOxygenMgL < 5.5, trend: status.dissolvedOxygenMgL < 5.5 ? '↓' : '→' },
-    { icon: Activity, label: 'pH', value: `${status.ph}`, sub: `turbidity ${status.turbidityNTU}`, accent: 'text-teal-400', trend: '→' },
-    { icon: Wind, label: 'Wind', value: `${status.windKnots}kn`, sub: status.weather, accent: 'text-sky-400', trend: '→' },
-    { icon: Fish, label: 'Biomass', value: `${(status.totalBiomassKg / 1000).toFixed(1)}t`, sub: `${status.totalPopulation.toLocaleString()} fish`, accent: 'text-emerald-400', trend: '↑' },
-    { icon: Users, label: 'Staff', value: `${status.staffOnDuty}`, sub: `${status.boatsActive} boats`, accent: 'text-blue-400', trend: '→' },
+    { icon: Thermometer, label: 'Lake Temp', value: `${status.lakeTempC}°C`, sub: `ambient ${status.ambientTempC}°C`, accent: 'text-orange-400', trend: '+0.2', prompt: 'Why is lake temperature changing?' },
+    { icon: Droplets, label: 'Dissolved O₂', value: `${status.dissolvedOxygenMgL}`, sub: 'mg/L', accent: 'text-cyan-400', pulse: status.dissolvedOxygenMgL < 5.5, trend: status.dissolvedOxygenMgL < 5.5 ? '↓' : '→', prompt: 'Explain dissolved oxygen levels' },
+    { icon: Activity, label: 'pH', value: `${status.ph}`, sub: `turbidity ${status.turbidityNTU}`, accent: 'text-teal-400', trend: '→', prompt: 'What does pH indicate?' },
+    { icon: Wind, label: 'Wind', value: `${status.windKnots}kn`, sub: status.weather, accent: 'text-sky-400', trend: '→', prompt: 'How does wind affect operations?' },
+    { icon: Fish, label: 'Biomass', value: `${(status.totalBiomassKg / 1000).toFixed(1)}t`, sub: `${status.totalPopulation.toLocaleString()} fish`, accent: 'text-emerald-400', trend: '↑', prompt: 'Biomass growth analysis' },
+    { icon: Users, label: 'Staff', value: `${status.staffOnDuty}`, sub: `${status.boatsActive} boats`, accent: 'text-blue-400', trend: '→', prompt: 'Staff deployment review' },
   ];
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {vitals.map((v, i) => (
-        <motion.div
+        <motion.button
           key={v.label}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05, type: 'spring', stiffness: 200, damping: 25 }}
-          whileHover={{ y: -3, scale: 1.02 }}
-          className="glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-[100px] relative overflow-hidden group cursor-default"
+          whileHover={{ y: -4, scale: 1.03 }}
+          onClick={() => onAskOI?.(v.prompt)}
+          className="glass-panel rounded-2xl p-4 flex flex-col justify-between min-h-[100px] relative overflow-hidden group cursor-pointer text-left"
         >
           <div className="flex items-center justify-between">
             <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wider">{v.label}</span>
@@ -441,13 +555,18 @@ function VitalFlow({ status }: { status: FarmStatus }) {
           <div className={`absolute top-2 right-2 text-[9px] font-mono ${v.trend === '↑' ? 'text-emerald-400' : v.trend === '↓' ? 'text-orange-400' : 'text-slate-600'}`}>
             {v.trend}
           </div>
-        </motion.div>
+          {/* Hover OI indicator */}
+          <div className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <BrainCircuit className="w-3 h-3 text-cyan-400/60" />
+          </div>
+        </motion.button>
       ))}
     </div>
   );
 }
 
-function LivingTimeline({ events, loading, now, lastTickAt }: { events: FarmEvent[]; loading: boolean; now: number; lastTickAt: string | null }) {
+/* ============ LIVING TIMELINE ============ */
+function LivingTimeline({ events, loading, now, lastTickAt, onSelectEvent }: { events: FarmEvent[]; loading: boolean; now: number; lastTickAt: string | null; onSelectEvent: (e: FarmEvent) => void }) {
   const [hovered, setHovered] = useState<string | null>(null);
   return (
     <div className="glass rounded-3xl overflow-hidden">
@@ -480,7 +599,8 @@ function LivingTimeline({ events, loading, now, lastTickAt }: { events: FarmEven
                 transition={{ type: 'spring', stiffness: 120, damping: 18 }}
                 onMouseEnter={() => setHovered(evt.id)}
                 onMouseLeave={() => setHovered(null)}
-                className={`flex gap-3 bg-slate-950/40 border ${SEVERITY_RING[evt.severity]} rounded-xl p-3 transition-all ${isHovered ? 'scale-[1.01] bg-slate-950/70' : ''}`}
+                onClick={() => onSelectEvent(evt)}
+                className={`flex gap-3 bg-slate-950/40 border ${SEVERITY_RING[evt.severity]} rounded-xl p-3 transition-all cursor-pointer ${isHovered ? 'scale-[1.01] bg-slate-950/70 border-cyan-400/30' : ''}`}
               >
                 <div className={`shrink-0 w-9 h-9 rounded-lg ${meta.bg} border border-cyan-500/10 flex items-center justify-center ${meta.color}`}>
                   <Icon className="w-4 h-4" />
@@ -510,7 +630,8 @@ function LivingTimeline({ events, loading, now, lastTickAt }: { events: FarmEven
   );
 }
 
-function CageVitals({ status }: { status: FarmStatus | null }) {
+/* ============ CAGE VITALS ============ */
+function CageVitals({ status, onAskOI }: { status: FarmStatus | null; onAskOI?: (p: string) => void }) {
   if (!status) return null;
   return (
     <div className="glass rounded-3xl overflow-hidden">
@@ -521,12 +642,13 @@ function CageVitals({ status }: { status: FarmStatus | null }) {
       </div>
       <div className="p-4 space-y-2.5 max-h-[300px] overflow-y-auto scrollbar-none">
         {status.cages.map((c, i) => (
-          <motion.div
+          <motion.button
             key={c.id}
             initial={{ opacity: 0, x: 12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-slate-950/40 border border-cyan-500/10 rounded-xl p-3 hover:border-cyan-400/30 transition-all"
+            onClick={() => onAskOI?.(`Analyze cage ${c.name}: health ${c.healthScore}, O₂ ${c.dissolvedOxygenMgL}, biomass ${(c.biomassKg / 1000).toFixed(1)}t. Recommend actions.`)}
+            className="w-full text-left bg-slate-950/40 border border-cyan-500/10 rounded-xl p-3 hover:border-cyan-400/30 transition-all"
           >
             <div className="flex justify-between items-start">
               <div>
@@ -551,13 +673,14 @@ function CageVitals({ status }: { status: FarmStatus | null }) {
                 <div className="text-emerald-400">{c.feedTodayKg}kg</div>
               </div>
             </div>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
     </div>
   );
 }
 
+/* ============ OI BRIEFING ============ */
 function OIBriefing({ status, sustainabilityScore, onAskOI }: { status: FarmStatus | null; sustainabilityScore: number; onAskOI?: (p: string) => void }) {
   const [thinking, setThinking] = useState(false);
   return (
@@ -603,6 +726,62 @@ function OIBriefing({ status, sustainabilityScore, onAskOI }: { status: FarmStat
           </motion.div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ============ EVENT DETAIL DRAWER ============ */
+function EventDetailDrawer({ event, onClose, onAskOI }: { event: FarmEvent; onClose: () => void; onAskOI?: (p: string) => void }) {
+  const meta = CATEGORY_META[event.category] || CATEGORY_META.water;
+  const Icon = meta.icon;
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end p-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" />
+      <motion.div
+        initial={{ y: 40, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 40, opacity: 0, scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+        className="relative glass-strong rounded-3xl w-full max-w-md p-6 shadow-2xl"
+      >
+        <button onClick={onClose} className="absolute top-3 right-3 p-1.5 rounded-lg bg-slate-950/60 border border-white/10 text-slate-400 hover:text-white">
+          <ChevronRight className="w-4 h-4 rotate-180" />
+        </button>
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`p-3 rounded-2xl ${meta.bg} border border-cyan-500/10`}>
+            <Icon className={`w-6 h-6 ${meta.color}`} />
+          </div>
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400/60">{meta.label} · {event.severity}</div>
+            <h3 className="font-display font-bold text-white text-lg">{event.title}</h3>
+          </div>
+        </div>
+        <p className="text-sm text-slate-300 font-sans leading-relaxed mb-4">{event.description}</p>
+        <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
+          <div className="bg-slate-950/40 rounded-xl p-3 border border-cyan-500/10">
+            <div className="text-[10px] font-mono text-slate-500 uppercase">Actor</div>
+            <div className="text-white font-semibold">{event.actor}</div>
+          </div>
+          <div className="bg-slate-950/40 rounded-xl p-3 border border-cyan-500/10">
+            <div className="text-[10px] font-mono text-slate-500 uppercase">Location</div>
+            <div className="text-white font-semibold">{event.location || 'N/A'}</div>
+          </div>
+          <div className="bg-slate-950/40 rounded-xl p-3 border border-cyan-500/10">
+            <div className="text-[10px] font-mono text-slate-500 uppercase">Time</div>
+            <div className="text-white font-semibold">{new Date(event.timestamp).toLocaleString()}</div>
+          </div>
+          <div className="bg-slate-950/40 rounded-xl p-3 border border-cyan-500/10">
+            <div className="text-[10px] font-mono text-slate-500 uppercase">Severity</div>
+            <div className={`font-semibold ${event.severity === 'critical' ? 'text-red-400' : event.severity === 'warning' ? 'text-orange-400' : event.severity === 'success' ? 'text-emerald-400' : 'text-cyan-400'}`}>{event.severity}</div>
+          </div>
+        </div>
+        <button
+          onClick={() => onAskOI?.(`Analyze this event: ${event.title} — ${event.description}. Actor: ${event.actor}. What should I do?`)}
+          className="w-full py-2.5 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold hover:bg-cyan-400 flex items-center justify-center gap-1.5"
+        >
+          <BrainCircuit className="w-4 h-4" /> Ask OI to analyze this event
+        </button>
+      </motion.div>
     </div>
   );
 }

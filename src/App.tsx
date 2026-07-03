@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Boat, CatchReport, Order, ColdChainFacility, SustainabilityMetrics, UserProfile, Lesson, Notification, FarmStatus } from './types';
-import OceanBackground from './components/OceanBackground';
-import Navigation from './components/Navigation';
+import LivingFarmBackground from './components/LivingFarmBackground';
+import CommandDock from './components/CommandDock';
+import AmbientOI from './components/AmbientOI';
 import MissionControl from './components/MissionControl';
 import FarmTwin from './components/FarmTwin';
 import Marketplace from './components/Marketplace';
@@ -10,8 +11,7 @@ import Intelligence from './components/Intelligence';
 import LearningCenter from './components/LearningCenter';
 import SplashExperience from './components/SplashExperience';
 import CommandPalette from './components/CommandPalette';
-import { WaterRippleEffect } from './components/InteractionEngine';
-import { CircleAlert as AlertCircle, Sparkles, X } from 'lucide-react';
+import { CircleAlert as AlertCircle, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('mission');
@@ -111,14 +111,23 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-slate-100 font-sans relative flex flex-col justify-between">
-      <OceanBackground sustainabilityScore={sustainability.environmentalScore} />
-      <WaterRippleEffect />
+      <LivingFarmBackground farmStatus={farmStatus} sustainabilityScore={sustainability.environmentalScore} />
 
-      <Navigation
+      <CommandDock
         activeTab={activeTab}
         onTabChanged={setActiveTab}
         onOpenCommand={() => setCommandOpen(true)}
-        farmStatus={farmStatus ? { weather: farmStatus.weather, dissolvedOxygenMgL: farmStatus.dissolvedOxygenMgL, staffOnDuty: farmStatus.staffOnDuty, boatsActive: farmStatus.boatsActive } : null}
+        farmStatus={farmStatus ? { weather: farmStatus.weather, dissolvedOxygenMgL: farmStatus.dissolvedOxygenMgL, staffOnDuty: farmStatus.staffOnDuty, boatsActive: farmStatus.boatsActive, timeOfDay: farmStatus.timeOfDay, windKnots: farmStatus.windKnots, lakeTempC: farmStatus.lakeTempC } : null}
+        recentSearches={recentSearches}
+        onAskOI={handleAskOI}
+      />
+
+      <AmbientOI
+        activeTab={activeTab}
+        farmStatus={farmStatus}
+        sustainabilityScore={sustainability.environmentalScore}
+        onAskOI={handleAskOI}
+        onNavigate={setActiveTab}
       />
 
       <CommandPalette
@@ -129,7 +138,7 @@ export default function App() {
         recentSearches={recentSearches}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-10 z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 z-10">
         {activeTab === 'mission' && (
           <div className="space-y-10">
             {/* Hero */}
@@ -190,7 +199,7 @@ export default function App() {
               </motion.div>
             </section>
 
-            <MissionControl sustainabilityScore={sustainability.environmentalScore} onAskOI={handleAskOI} />
+            <MissionControl sustainabilityScore={sustainability.environmentalScore} onAskOI={handleAskOI} onNavigate={setActiveTab} />
 
             {/* Sustainability bento */}
             <section className="space-y-4">

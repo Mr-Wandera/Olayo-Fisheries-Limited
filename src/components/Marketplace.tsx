@@ -1,12 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, CartItem, Order, UserProfile } from '../types';
-import {
-  Search, ShoppingCart, Heart, Plus, Minus, X, Shield, CheckCircle2,
-  ChevronRight, Download, Package, TrendingUp, TrendingDown, Sparkles,
-  BrainCircuit, MapPin, Clock, Gauge, Fish, ChefHat, DollarSign, ArrowRight,
-  Activity, Zap, Eye, Star, Filter, SlidersHorizontal, Leaf
-} from 'lucide-react';
+import { Search, ShoppingCart, Heart, Plus, Minus, X, Shield, CircleCheck as CheckCircle2, ChevronRight, Download, Package, TrendingUp, TrendingDown, Sparkles, BrainCircuit, MapPin, Clock, Gauge, Fish, ChefHat, DollarSign, ArrowRight, Activity, Zap, Eye, Star, ListFilter as Filter, SlidersHorizontal, Leaf, Snowflake, Truck, Navigation, Thermometer, Droplets, Anchor, Award, Utensils } from 'lucide-react';
 
 interface MarketplaceProps {
   products: Product[];
@@ -31,6 +26,7 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [showDemandForecast, setShowDemandForecast] = useState(true);
+  const [exchangeView, setExchangeView] = useState<'grid' | 'list'>('grid');
 
   const filteredProducts = useMemo(() => {
     let list = [...products];
@@ -49,7 +45,6 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
       const score = (s: string) => s === 'prime' ? 3 : s === 'excellent' ? 2 : 1;
       list.sort((a, b) => score(b.freshnessStatus) - score(a.freshnessStatus));
     } else if (sortBy === 'demand') {
-      // Simulate demand score
       const demand = (p: Product) => (p.sustainabilityScore * 0.3 + (p.availability === 'in-stock' ? 50 : 20) + (100 - p.price * 2));
       list.sort((a, b) => demand(b) - demand(a));
     }
@@ -169,12 +164,20 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
             <option value="Fingerlings">Fingerlings</option>
             <option value="Organic">Feed & Fertilizer</option>
           </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-slate-950 border border-cyan-500/10 rounded-xl px-3 py-2 text-xs text-cyan-200 outline-none focus:border-cyan-400">
-            <option value="demand">Sort: OI Demand Forecast</option>
-            <option value="sustainability">Sort: Sustainability Index</option>
-            <option value="price">Sort: Price (Lowest)</option>
-            <option value="freshness">Sort: Freshness Status</option>
-          </select>
+          <div className="flex gap-2">
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="flex-1 bg-slate-950 border border-cyan-500/10 rounded-xl px-3 py-2 text-xs text-cyan-200 outline-none focus:border-cyan-400">
+              <option value="demand">OI Demand Forecast</option>
+              <option value="sustainability">Sustainability Index</option>
+              <option value="price">Price (Lowest)</option>
+              <option value="freshness">Freshness Status</option>
+            </select>
+            <button
+              onClick={() => setExchangeView(v => v === 'grid' ? 'list' : 'grid')}
+              className="p-2 rounded-xl bg-slate-950 border border-cyan-500/10 text-cyan-400 hover:bg-cyan-500/10 transition-all"
+            >
+              {exchangeView === 'grid' ? <Filter className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -199,71 +202,22 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className={exchangeView === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" : "space-y-3"}>
             {filteredProducts.map((p, i) => {
               const isFav = favorites.includes(p.id);
               const demandScore = Math.min(100, Math.round(p.sustainabilityScore * 0.3 + (p.availability === 'in-stock' ? 50 : 20)));
               return (
-                <motion.div
+                <ProductCard
                   key={p.id}
-                  layout
-                  initial={{ opacity: 0, y: 16, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: i * 0.04, type: 'spring', stiffness: 200, damping: 25 }}
-                  whileHover={{ y: -4 }}
-                  onClick={() => openDetails(p)}
-                  className="glass rounded-2xl overflow-hidden cursor-pointer group relative"
-                >
-                  {/* Image */}
-                  <div className="relative h-44 overflow-hidden bg-slate-950">
-                    <img src={p.image} alt={p.name} referrerPolicy="no-referrer" className="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
-                      <span className="text-[9px] font-mono font-bold bg-slate-950/85 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-full backdrop-blur">
-                        🌿 {p.sustainabilityScore}/100
-                      </span>
-                      <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full backdrop-blur uppercase ${p.freshnessStatus === 'prime' ? 'bg-amber-500/25 border border-amber-400/30 text-amber-300' : 'bg-cyan-500/25 border border-cyan-400/30 text-cyan-300'}`}>
-                        ⚓ {p.freshnessStatus}
-                      </span>
-                    </div>
-                    <button
-                      onClick={(e) => toggleFavorite(p.id, e)}
-                      className={`absolute top-2.5 right-2.5 p-1.5 rounded-full bg-slate-950/60 border border-white/10 text-white hover:text-red-400 transition-colors ${isFav ? 'text-red-500 bg-slate-950 border-red-500/20' : ''}`}
-                    >
-                      <Heart className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
-                    </button>
-                    {/* Demand indicator */}
-                    <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/85 border border-cyan-400/30 backdrop-blur">
-                      <TrendingUp className="w-2.5 h-2.5 text-emerald-400" />
-                      <span className="text-[9px] font-mono text-emerald-400 font-bold">{demandScore}</span>
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                    <div>
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-display font-bold text-white text-sm line-clamp-1 group-hover:text-cyan-300 transition-colors">{p.name}</h4>
-                        <div className="text-right shrink-0">
-                          <span className="font-mono text-cyan-400 font-bold text-sm">${p.price.toFixed(2)}</span>
-                          <span className="text-[10px] text-slate-400">/{p.unit}</span>
-                        </div>
-                      </div>
-                      <p className="text-[11px] font-mono text-slate-400 italic mt-0.5">{p.scientificName}</p>
-                      <p className="text-xs text-slate-300 font-sans line-clamp-2 mt-2 leading-normal">{p.description}</p>
-                    </div>
-                    <div className="border-t border-cyan-500/10 pt-3 flex justify-between items-center">
-                      <div className="text-[10px] text-cyan-300/60 font-mono flex items-center gap-1">
-                        <MapPin className="w-3 h-3" /> {p.origin}
-                      </div>
-                      <button
-                        onClick={(e) => addToCart(p, e)}
-                        className="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center gap-1 shadow-md shadow-cyan-500/10"
-                      >
-                        <Plus className="w-3 h-3" /> Add
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  product={p}
+                  index={i}
+                  isFav={isFav}
+                  demandScore={demandScore}
+                  view={exchangeView}
+                  onToggleFav={toggleFavorite}
+                  onOpen={openDetails}
+                  onAdd={addToCart}
+                />
               );
             })}
           </div>
@@ -358,15 +312,28 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
                         <h4 className="font-display font-bold text-white text-base">Cargo Dispatched & Verified!</h4>
                         <p className="text-xs text-slate-400 mt-1">Invoice ID: <span className="font-mono text-cyan-400 font-bold">{placedOrder.id}</span></p>
                       </div>
+                      {/* Animated packaging line */}
                       <div className="bg-slate-950/60 border border-emerald-500/20 rounded-xl p-4 text-left space-y-2">
                         <div className="flex items-center gap-2 mb-2">
                           <Package className="w-4 h-4 text-cyan-400" />
                           <div className="text-[10px] font-mono text-cyan-300 uppercase">Packaging Line Log</div>
                         </div>
                         <div className="space-y-1 text-[11px] font-mono text-slate-300">
-                          <div className="flex justify-between"><span>Box Assembly</span><span className="text-emerald-400">COMPLETE</span></div>
-                          <div className="flex justify-between"><span>Vacuum Seal</span><span className="text-emerald-400">SEALED [-24°C]</span></div>
-                          <div className="flex justify-between"><span>NFC Tag Linkage</span><span className="text-emerald-400">ACTIVE</span></div>
+                          {['Box Assembly', 'Vacuum Seal', 'NFC Tag Linkage', 'Cold Chain Verification'].map((step, si) => (
+                            <motion.div
+                              key={step}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: si * 0.2 }}
+                              className="flex justify-between items-center"
+                            >
+                              <span>{step}</span>
+                              <span className="text-emerald-400 flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" />
+                                {si === 1 ? 'SEALED [-24°C]' : 'COMPLETE'}
+                              </span>
+                            </motion.div>
+                          ))}
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -408,6 +375,142 @@ export default function Marketplace({ products, currentUser, onOrderCompleted, o
   );
 }
 
+/* ============ PRODUCT CARD — premium exchange card ============ */
+function ProductCard({ product, index, isFav, demandScore, view, onToggleFav, onOpen, onAdd }: {
+  product: Product; index: number; isFav: boolean; demandScore: number; view: string;
+  onToggleFav: (id: string, e?: React.MouseEvent) => void;
+  onOpen: (p: Product) => void;
+  onAdd: (p: Product, e?: React.MouseEvent) => void;
+}) {
+  if (view === 'list') {
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.03, type: 'spring', stiffness: 200, damping: 25 }}
+        whileHover={{ y: -2 }}
+        onClick={() => onOpen(product)}
+        className="glass rounded-2xl overflow-hidden cursor-pointer group flex items-center gap-4 p-3"
+      >
+        <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-950 shrink-0">
+          <img src={product.image} alt={product.name} referrerPolicy="no-referrer" className="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <div>
+              <h4 className="font-display font-bold text-white text-sm line-clamp-1 group-hover:text-cyan-300 transition-colors">{product.name}</h4>
+              <p className="text-[10px] font-mono text-slate-400 italic">{product.scientificName}</p>
+            </div>
+            <div className="text-right shrink-0">
+              <span className="font-mono text-cyan-400 font-bold text-sm">${product.price.toFixed(2)}</span>
+              <span className="text-[10px] text-slate-400">/{product.unit}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 mt-2 text-[10px] font-mono">
+            <span className="flex items-center gap-1 text-emerald-400"><Leaf className="w-3 h-3" /> {product.sustainabilityScore}</span>
+            <span className="flex items-center gap-1 text-cyan-400"><Snowflake className="w-3 h-3" /> {product.currentTemp.toFixed(1)}°C</span>
+            <span className="flex items-center gap-1 text-amber-400"><TrendingUp className="w-3 h-3" /> {demandScore}</span>
+            <span className="flex items-center gap-1 text-slate-400"><MapPin className="w-3 h-3" /> {product.origin}</span>
+          </div>
+        </div>
+        <button
+          onClick={(e) => onAdd(product, e)}
+          className="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center gap-1 shrink-0"
+        >
+          <Plus className="w-3 h-3" /> Add
+        </button>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 16, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: index * 0.04, type: 'spring', stiffness: 200, damping: 25 }}
+      whileHover={{ y: -4 }}
+      onClick={() => onOpen(product)}
+      className="glass rounded-2xl overflow-hidden cursor-pointer group relative"
+    >
+      {/* Image */}
+      <div className="relative h-44 overflow-hidden bg-slate-950">
+        <img src={product.image} alt={product.name} referrerPolicy="no-referrer" className="w-full h-full object-cover brightness-90 group-hover:scale-105 transition-transform duration-500" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent" />
+        {/* Badges */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
+          <span className="text-[9px] font-mono font-bold bg-slate-950/85 border border-emerald-500/30 text-emerald-400 px-2 py-0.5 rounded-full backdrop-blur flex items-center gap-1">
+            <Leaf className="w-2.5 h-2.5" /> {product.sustainabilityScore}/100
+          </span>
+          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full backdrop-blur uppercase flex items-center gap-1 ${product.freshnessStatus === 'prime' ? 'bg-amber-500/25 border border-amber-400/30 text-amber-300' : 'bg-cyan-500/25 border border-cyan-400/30 text-cyan-300'}`}>
+            <Award className="w-2.5 h-2.5" /> {product.freshnessStatus}
+          </span>
+        </div>
+        <button
+          onClick={(e) => onToggleFav(product.id, e)}
+          className={`absolute top-2.5 right-2.5 p-1.5 rounded-full bg-slate-950/60 border border-white/10 text-white hover:text-red-400 transition-colors ${isFav ? 'text-red-500 bg-slate-950 border-red-500/20' : ''}`}
+        >
+          <Heart className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
+        </button>
+        {/* Demand indicator */}
+        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/85 border border-cyan-400/30 backdrop-blur">
+          <TrendingUp className="w-2.5 h-2.5 text-emerald-400" />
+          <span className="text-[9px] font-mono text-emerald-400 font-bold">{demandScore}</span>
+        </div>
+        {/* Cold chain temp */}
+        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/85 border border-blue-400/30 backdrop-blur">
+          <Snowflake className="w-2.5 h-2.5 text-blue-400" />
+          <span className="text-[9px] font-mono text-blue-400 font-bold">{product.currentTemp.toFixed(1)}°C</span>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+        <div>
+          <div className="flex justify-between items-start">
+            <h4 className="font-display font-bold text-white text-sm line-clamp-1 group-hover:text-cyan-300 transition-colors">{product.name}</h4>
+            <div className="text-right shrink-0">
+              <span className="font-mono text-cyan-400 font-bold text-sm">${product.price.toFixed(2)}</span>
+              <span className="text-[10px] text-slate-400">/{product.unit}</span>
+            </div>
+          </div>
+          <p className="text-[11px] font-mono text-slate-400 italic mt-0.5">{product.scientificName}</p>
+          <p className="text-xs text-slate-300 font-sans line-clamp-2 mt-2 leading-normal">{product.description}</p>
+        </div>
+        {/* Traceability strip */}
+        <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
+          <Anchor className="w-3 h-3 text-cyan-400" />
+          <span className="truncate">{product.method}</span>
+          <span className="text-slate-600">·</span>
+          <MapPin className="w-3 h-3 text-cyan-400" />
+          <span className="truncate">{product.origin}</span>
+        </div>
+        <div className="border-t border-cyan-500/10 pt-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => onToggleFav(product.id, e)}
+              className={`p-1.5 rounded-lg border transition-all ${isFav ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'bg-slate-950/40 border-cyan-500/10 text-slate-400 hover:text-orange-400'}`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} />
+            </button>
+            <span className={`text-[9px] font-mono px-2 py-1 rounded-full ${product.availability === 'in-stock' ? 'bg-emerald-950 text-emerald-400' : product.availability === 'low-stock' ? 'bg-amber-950 text-amber-400' : 'bg-red-950 text-red-400'}`}>
+              {product.availability}
+            </span>
+          </div>
+          <button
+            onClick={(e) => onAdd(product, e)}
+            className="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 text-[11px] font-bold hover:bg-cyan-400 flex items-center gap-1 shadow-md shadow-cyan-500/10"
+          >
+            <Plus className="w-3 h-3" /> Add
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ============ RECENTLY VIEWED ============ */
 function RecentlyViewedPanel({ products, onOpen }: { products: Product[]; onOpen: (p: Product) => void }) {
   return (
@@ -436,11 +539,18 @@ function RecentlyViewedPanel({ products, onOpen }: { products: Product[]; onOpen
 function ColdChainStamp() {
   return (
     <div className="glass-luminous rounded-2xl p-4 space-y-2">
-      <Shield className="w-6 h-6 text-cyan-400" />
-      <h4 className="font-display font-semibold text-white text-xs">Olayo Cold Chain Certified</h4>
+      <div className="flex items-center gap-2">
+        <Snowflake className="w-5 h-5 text-blue-400" />
+        <h4 className="font-display font-semibold text-white text-xs">Cold Chain Certified</h4>
+      </div>
       <p className="text-[11px] text-cyan-100/60 leading-relaxed font-sans">
         All products carry temperature logs from Busia Processing Hub. NFC-tagged for full traceability from cage to customer.
       </p>
+      <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
+        <Truck className="w-3 h-3 text-cyan-400" /> Busia → Kampala
+        <span className="text-slate-600">·</span>
+        <Thermometer className="w-3 h-3 text-blue-400" /> -24°C maintained
+      </div>
     </div>
   );
 }
@@ -451,6 +561,7 @@ function AIBuyingAssistant({ onAskOI }: { onAskOI?: (p: string) => void }) {
     { label: 'Best for grilling?', icon: ChefHat, prompt: 'Which aquaculture product is best for grilling?' },
     { label: 'High omega-3?', icon: Activity, prompt: 'Which product has the highest omega-3 content?' },
     { label: 'Bulk order advice', icon: ShoppingCart, prompt: 'Recommend products for a wholesale bulk order.' },
+    { label: 'Restaurant recommendation', icon: Utensils, prompt: 'Recommend products for a restaurant menu.' },
   ];
   return (
     <div className="glass rounded-2xl p-4 space-y-3">
@@ -481,8 +592,9 @@ function AIBuyingAssistant({ onAskOI }: { onAskOI?: (p: string) => void }) {
   );
 }
 
-/* ============ PRODUCT DETAIL MODAL ============ */
+/* ============ PRODUCT DETAIL MODAL — premium with traceability ============ */
 function ProductDetailModal({ product, onClose, onAddToCart, onAskOI }: { product: Product; onClose: () => void; onAddToCart: (p: Product) => void; onAskOI?: (p: string) => void }) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'traceability' | 'nutrition'>('overview');
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
@@ -513,38 +625,109 @@ function ProductDetailModal({ product, onClose, onAddToCart, onAskOI }: { produc
         </div>
 
         <div className="md:w-1/2 p-6 overflow-y-auto space-y-4">
-          <p className="text-xs text-slate-300 leading-relaxed font-sans">{product.description}</p>
-
-          <div className="bg-slate-950/50 p-3 rounded-xl border border-cyan-500/10 space-y-2">
-            <div className="text-[9px] font-mono text-cyan-400/60 uppercase">Telemetry & Cold Chain</div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Active Temp:</span>
-              <span className="font-mono text-cyan-300 font-semibold">{product.currentTemp.toFixed(1)}°C</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Freshness:</span>
-              <span className="font-mono text-emerald-400 font-semibold uppercase">{product.freshnessStatus}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-400">Method:</span>
-              <span className="font-mono text-slate-300">{product.method}</span>
-            </div>
+          {/* Tabs */}
+          <div className="flex gap-1 bg-slate-950/60 border border-cyan-500/10 p-1 rounded-xl">
+            {[
+              { id: 'overview', label: 'Overview' },
+              { id: 'traceability', label: 'Traceability' },
+              { id: 'nutrition', label: 'Nutrition' },
+            ].map(t => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id as any)}
+                className={`flex-1 px-3 py-1.5 rounded-lg text-[10px] font-mono font-semibold transition-all ${activeTab === t.id ? 'text-cyan-300 bg-cyan-500/10' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
 
-          <div>
-            <div className="text-[9px] font-mono text-cyan-400/60 uppercase mb-2">Nutritional Density (per 100g)</div>
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div className="bg-slate-950/30 p-2 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Protein:</span><span className="text-white font-bold">{product.nutrients.protein}</span></div>
-              <div className="bg-slate-950/30 p-2 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Omega-3:</span><span className="text-emerald-400 font-bold">{product.nutrients.omega3}</span></div>
-              <div className="bg-slate-950/30 p-2 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Fat:</span><span className="text-white font-bold">{product.nutrients.fat}</span></div>
-              <div className="bg-slate-950/30 p-2 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Calories:</span><span className="text-cyan-400 font-bold">{product.nutrients.calories} kcal</span></div>
-            </div>
-          </div>
+          <AnimatePresence mode="wait">
+            {activeTab === 'overview' && (
+              <motion.div key="overview" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                <p className="text-xs text-slate-300 leading-relaxed font-sans">{product.description}</p>
+                <div className="bg-slate-950/50 p-3 rounded-xl border border-cyan-500/10 space-y-2">
+                  <div className="text-[9px] font-mono text-cyan-400/60 uppercase">Telemetry & Cold Chain</div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Active Temp:</span>
+                    <span className="font-mono text-cyan-300 font-semibold">{product.currentTemp.toFixed(1)}°C</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Freshness:</span>
+                    <span className="font-mono text-emerald-400 font-semibold uppercase">{product.freshnessStatus}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Method:</span>
+                    <span className="font-mono text-slate-300">{product.method}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Availability:</span>
+                    <span className={`font-mono font-semibold ${product.availability === 'in-stock' ? 'text-emerald-400' : product.availability === 'low-stock' ? 'text-amber-400' : 'text-red-400'}`}>{product.availability}</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {activeTab === 'traceability' && (
+              <motion.div key="traceability" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                <div className="text-[9px] font-mono text-cyan-400/60 uppercase">Supply Chain Journey</div>
+                {[
+                  { icon: Anchor, label: 'Harvest Source', value: product.origin, temp: 'Lake Victoria · Busiime Grid' },
+                  { icon: Fish, label: 'Processing', value: 'Busia Processing Hub', temp: 'Gutted & scaled within 2h' },
+                  { icon: Snowflake, label: 'Cold Storage', value: 'Flash frozen -24°C', temp: `${product.currentTemp.toFixed(1)}°C maintained` },
+                  { icon: Truck, label: 'Transport', value: 'Refrigerated truck', temp: 'NFC-tagged container' },
+                  { icon: Package, label: 'Delivery', value: 'Doorstep', temp: 'Cold chain verified' },
+                ].map((step, i) => (
+                  <motion.div
+                    key={step.label}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-center gap-3 bg-slate-950/40 p-2.5 rounded-xl border border-cyan-500/10"
+                  >
+                    <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                      <step.icon className="w-3.5 h-3.5 text-cyan-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[10px] font-mono text-slate-500 uppercase">{step.label}</div>
+                      <div className="text-xs text-white font-semibold">{step.value}</div>
+                      <div className="text-[10px] text-slate-400 font-mono">{step.temp}</div>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+            {activeTab === 'nutrition' && (
+              <motion.div key="nutrition" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
+                <div className="text-[9px] font-mono text-cyan-400/60 uppercase">Nutritional Density (per 100g)</div>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div className="bg-slate-950/30 p-2.5 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Protein:</span><span className="text-white font-bold">{product.nutrients.protein}</span></div>
+                  <div className="bg-slate-950/30 p-2.5 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Omega-3:</span><span className="text-emerald-400 font-bold">{product.nutrients.omega3}</span></div>
+                  <div className="bg-slate-950/30 p-2.5 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Fat:</span><span className="text-white font-bold">{product.nutrients.fat}</span></div>
+                  <div className="bg-slate-950/30 p-2.5 rounded border border-cyan-500/5 flex justify-between"><span className="text-slate-400">Calories:</span><span className="text-cyan-400 font-bold">{product.nutrients.calories} kcal</span></div>
+                </div>
+                <div className="bg-slate-950/40 p-3 rounded-xl border border-cyan-500/10">
+                  <div className="text-[9px] font-mono text-cyan-400/60 uppercase mb-1">Quality Score</div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${product.sustainabilityScore}%` }}
+                        transition={{ duration: 0.8 }}
+                        className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400"
+                      />
+                    </div>
+                    <span className="text-xs font-mono font-bold text-emerald-400">{product.sustainabilityScore}/100</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="pt-2 flex justify-between items-center">
             <div className="text-xs">
-              <span className="text-slate-400">Sourcing Zone:</span>
-              <div className="font-semibold text-white font-sans">{product.origin}</div>
+              <span className="text-slate-400">Price:</span>
+              <div className="font-display font-bold text-cyan-400 text-lg">${product.price.toFixed(2)}<span className="text-xs text-slate-500">/{product.unit}</span></div>
             </div>
             <button onClick={() => onAddToCart(product)} className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs hover:bg-cyan-400 flex items-center gap-1.5">
               <Plus className="w-3.5 h-3.5" /> Add to Cart

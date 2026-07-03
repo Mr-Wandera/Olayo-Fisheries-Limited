@@ -689,6 +689,36 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783048784809_3416",
+      "timestamp": "2026-07-03T03:19:44.809Z",
+      "category": "marketplace",
+      "title": "Marketplace order confirmed",
+      "description": "Wholesale order from Kampala Fresh Distributors confirmed for 220 kg Nile Tilapia. Invoice INV-3095. Pending orders now 2.",
+      "actor": "Dr. Abdul Wandera",
+      "location": "Busiime Cage Grid",
+      "severity": "success"
+    },
+    {
+      "id": "evt_1783048765322_6386",
+      "timestamp": "2026-07-03T03:19:25.322Z",
+      "category": "fleet",
+      "title": "Vessel MV Nyanza departed Busiime dock",
+      "description": "MV Nyanza underway for routine cage inspection and feeding run. ETA return 14:30 EAT. Crew of 4, fuel 78%.",
+      "actor": "Samuel Okello",
+      "location": "Busiime Cage Grid",
+      "severity": "info"
+    },
+    {
+      "id": "evt_1783048744840_5501",
+      "timestamp": "2026-07-03T03:19:04.840Z",
+      "category": "ai",
+      "title": "OI predictive alert: feed inventory",
+      "description": "Projected feed stock depletion in 6.2 days at current consumption. Auto-reorder draft prepared for procurement approval.",
+      "actor": "Warden Marcus Vance",
+      "location": "Busia Processing Hub",
+      "severity": "warning"
+    },
+    {
       "id": "evt_1783048462495_4709",
       "timestamp": "2026-07-03T03:14:22.495Z",
       "category": "feeding",
