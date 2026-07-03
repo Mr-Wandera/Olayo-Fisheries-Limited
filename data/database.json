@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783049171030_7219",
+      "timestamp": "2026-07-03T03:26:11.030Z",
+      "category": "ai",
+      "title": "OI predictive alert: feed inventory",
+      "description": "Projected feed stock depletion in 6.2 days at current consumption. Auto-reorder draft prepared for procurement approval.",
+      "actor": "Samuel Okello",
+      "location": "Busia Processing Hub",
+      "severity": "warning"
+    },
+    {
       "id": "evt_1783049151274_1031",
       "timestamp": "2026-07-03T03:25:51.274Z",
       "category": "water",
