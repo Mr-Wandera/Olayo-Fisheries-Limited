@@ -4,6 +4,8 @@ import { Sparkles, BrainCircuit, Search, Circle as HelpCircle, CircleAlert as Al
 
 interface AiAssistantProps {
   onSearchResult?: (matchedText: string) => void;
+  initialQuery?: string;
+  onQueryConsumed?: () => void;
 }
 
 const SAMPLE_IMAGES = [
@@ -29,12 +31,23 @@ const SAMPLE_IMAGES = [
   }
 ];
 
-export default function AiAssistant({ onSearchResult }: AiAssistantProps) {
+export default function AiAssistant({ onSearchResult, initialQuery, onQueryConsumed }: AiAssistantProps) {
   const [activeTab, setActiveTab] = useState<'identify' | 'freshness' | 'price' | 'recipe' | 'search'>('identify');
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (initialQuery) {
+      setPrompt(initialQuery);
+      setActiveTab('search');
+      setTimeout(() => {
+        handleAnalyze(initialQuery);
+      }, 100);
+      onQueryConsumed?.();
+    }
+  }, [initialQuery]);
 
   const handleAnalyze = async (overridePrompt?: string, overrideImg?: string) => {
     setLoading(true);

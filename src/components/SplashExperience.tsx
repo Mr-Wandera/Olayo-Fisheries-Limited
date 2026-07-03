@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Waves, Sparkles, Navigation } from 'lucide-react';
+import { Waves, Sparkles, Fish, Droplets, BrainCircuit, ArrowRight } from 'lucide-react';
 
 interface SplashExperienceProps {
   onComplete: () => void;
@@ -12,90 +12,111 @@ const SPLASH_MESSAGES = [
   'Calibrating sub-zero freezing facility compressors...',
   'Synchronizing blockchain supply ledger checkpoints...',
   'Verifying NEMA environmental compliance indexes...',
-  'Olayo Fisheries Ecosystem Active. Launching portal...'
+  'Olayo Fisheries Ecosystem Active. Launching portal...',
 ];
 
 export default function SplashExperience({ onComplete }: SplashExperienceProps) {
-  const [progress, setProgress] = useState<number>(0);
-  const [messageIndex, setMessageIndex] = useState<number>(0);
-  const [isDone, setIsDone] = useState<boolean>(false);
+  const [progress, setProgress] = useState(0);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [isDone, setIsDone] = useState(false);
 
-  // Tick loading bar
   useEffect(() => {
-    const totalDuration = 3500; // 3.5 seconds
-    const intervalTime = 50;
-    const increment = (100 / (totalDuration / intervalTime));
-
+    const totalDuration = 3200;
+    const intervalTime = 40;
+    const increment = 100 / (totalDuration / intervalTime);
     const progressTimer = setInterval(() => {
       setProgress(prev => {
         const next = Math.min(100, prev + increment);
-        if (next >= 100) {
-          clearInterval(progressTimer);
-          setIsDone(true);
-        }
+        if (next >= 100) { clearInterval(progressTimer); setIsDone(true); }
         return next;
       });
     }, intervalTime);
-
-    // Rotate through status messages
     const messageTimer = setInterval(() => {
       setMessageIndex(prev => Math.min(SPLASH_MESSAGES.length - 1, prev + 1));
-    }, 600);
-
-    return () => {
-      clearInterval(progressTimer);
-      clearInterval(messageTimer);
-    };
+    }, 550);
+    return () => { clearInterval(progressTimer); clearInterval(messageTimer); };
   }, []);
 
+  // Generate floating fish particles
+  const fishParticles = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 4,
+    duration: 8 + Math.random() * 6,
+    size: 12 + Math.random() * 8,
+  })), []);
+
   return (
-    <div className="fixed inset-0 bg-slate-950 z-50 overflow-hidden flex flex-col justify-between p-8" id="splash-container">
-      
-      {/* BACKGROUND SUNRISE GLOWS & REFLECTIONS */}
-      {/* Golden-orange sunrise gradient behind deep blue water layers */}
-      <div className="absolute inset-0 bg-gradient-to-b from-amber-950/20 via-slate-950 to-slate-950 pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-gradient-to-b from-amber-600/10 via-orange-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-      
-      {/* Aquatic water ripple wave background lines (CSS styled) */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/10 via-transparent to-transparent pointer-events-none" />
+    <div className="fixed inset-0 bg-slate-950 z-50 overflow-hidden flex flex-col justify-between p-6 sm:p-8">
+      {/* Background atmosphere */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/30 via-slate-950 to-slate-950 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent rounded-full blur-3xl pointer-events-none animate-breathe" />
 
-      {/* Decorative vector birds flying */}
-      <div className="absolute top-24 left-1/4 opacity-40 pointer-events-none animate-pulse">
-        <svg width="40" height="15" viewBox="0 0 40 15" fill="none" className="text-amber-500/40">
-          <path d="M 0 10 Q 10 0, 20 10 Q 30 0, 40 10" stroke="currentColor" strokeWidth="1.5" fill="none" />
-        </svg>
-      </div>
+      {/* Animated water surface */}
+      <svg className="absolute bottom-0 left-0 w-full h-1/2 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 50">
+        <defs>
+          <linearGradient id="splashWater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0891b2" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#020617" stopOpacity="0.4" />
+          </linearGradient>
+        </defs>
+        <motion.path
+          d="M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z"
+          fill="url(#splashWater)"
+          animate={{ d: [
+            "M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z",
+            "M0,20 Q25,25 50,20 T100,20 L100,50 L0,50 Z",
+            "M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z",
+          ]}}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </svg>
 
-      <div className="absolute top-36 right-1/4 opacity-30 pointer-events-none animate-pulse" style={{ animationDelay: '1.2s' }}>
-        <svg width="30" height="12" viewBox="0 0 30 12" fill="none" className="text-teal-500/40">
-          <path d="M 0 8 Q 7.5 0, 15 8 Q 22.5 0, 30 8" stroke="currentColor" strokeWidth="1.2" fill="none" />
-        </svg>
-      </div>
+      {/* Floating fish silhouettes */}
+      {fishParticles.map(f => (
+        <motion.div
+          key={f.id}
+          className="absolute opacity-10 text-cyan-400 pointer-events-none"
+          style={{ top: `${30 + Math.random() * 40}%`, left: `${f.x}%` }}
+          initial={{ x: -50 }}
+          animate={{ x: typeof window !== 'undefined' ? window.innerWidth + 50 : 1000 }}
+          transition={{ duration: f.duration, repeat: Infinity, delay: f.delay, ease: 'linear' }}
+        >
+          <Fish style={{ width: f.size, height: f.size }} />
+        </motion.div>
+      ))}
 
-      {/* TOP DECK */}
+      {/* Top deck */}
       <div className="flex justify-between items-center text-slate-500 text-[10px] font-mono tracking-widest z-10">
-        <span>LOC: BUSIA DISTRICT • UGANDA</span>
-        <span>SYS VERSION: 1.0.0 RELEASE</span>
+        <span>LOC: BUSIA DISTRICT · UGANDA</span>
+        <span className="hidden sm:inline">SYS VERSION: 1.0.0</span>
       </div>
 
-      {/* CENTERPIECE LOGO & ANCHOR STORY */}
+      {/* Centerpiece */}
       <div className="max-w-xl mx-auto text-center space-y-6 z-10 flex-grow flex flex-col justify-center">
-        {/* Glowing circular waves icon */}
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="mx-auto relative w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-400 via-teal-400 to-amber-500 p-0.5 flex items-center justify-center shadow-2xl shadow-cyan-500/10"
+          transition={{ duration: 1, ease: 'easeOut' }}
+          className="mx-auto relative w-24 h-24 rounded-3xl bg-gradient-to-br from-cyan-400 via-teal-400 to-emerald-400 p-0.5 flex items-center justify-center shadow-2xl shadow-cyan-500/30"
         >
-          {/* Animated pulsing ocean wave rings */}
-          <div className="absolute inset-0 rounded-3xl bg-cyan-400/20 animate-ping pointer-events-none" />
+          <motion.div
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+            className="absolute inset-0 rounded-3xl bg-cyan-400/30"
+          />
           <div className="w-full h-full rounded-[22px] bg-slate-950 flex items-center justify-center">
-            <Waves className="w-10 h-10 text-cyan-400 animate-pulse stroke-[2]" />
+            <motion.div
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Waves className="w-12 h-12 text-cyan-400 stroke-[2]" />
+            </motion.div>
           </div>
         </motion.div>
 
         <div className="space-y-2">
-          <motion.h1 
+          <motion.h1
             initial={{ y: 15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -103,81 +124,98 @@ export default function SplashExperience({ onComplete }: SplashExperienceProps) 
           >
             OLAYO FISHERIES
           </motion.h1>
-          
-          <motion.p 
+          <motion.p
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-[10px] sm:text-xs font-mono tracking-[0.25em] text-amber-400 uppercase font-black"
+            className="text-[10px] sm:text-xs font-mono tracking-[0.25em] text-cyan-400 uppercase font-black"
           >
-            Cultivating Sustainably, Nourishing East Africa
+            Cultivating Sustainably · Nourishing East Africa
           </motion.p>
         </div>
 
-        {/* Soft sunrise reflecting waves animation */}
-        <div className="h-6 flex items-center justify-center gap-1 opacity-40">
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent to-amber-500" />
-          <span className="text-[10px] text-amber-500 font-bold font-mono">✦</span>
-          <div className="w-16 h-0.5 bg-gradient-to-l from-transparent to-amber-500" />
-        </div>
+        {/* Feature pills */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="flex flex-wrap justify-center gap-2"
+        >
+          {[
+            { icon: Droplets, label: 'IoT Telemetry' },
+            { icon: BrainCircuit, label: 'AI Workforce' },
+            { icon: Fish, label: 'Cage Aquaculture' },
+          ].map((f, i) => (
+            <motion.div
+              key={f.label}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.9 + i * 0.1 }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/60 border border-cyan-500/20 backdrop-blur-sm"
+            >
+              <f.icon className="w-3 h-3 text-cyan-400" />
+              <span className="text-[10px] font-mono text-cyan-300">{f.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
 
-      {/* BOTTOM DECK: LOADER PROGRESS */}
+      {/* Bottom deck: loader */}
       <div className="max-w-md mx-auto w-full space-y-4 z-10 pb-8 text-center">
-        
-        {/* Status log message */}
         <div className="h-6">
           <AnimatePresence mode="wait">
-            <motion.p 
+            <motion.p
               key={messageIndex}
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="text-[10px] sm:text-xs font-mono text-cyan-400/80 tracking-normal"
+              className="text-[10px] sm:text-xs font-mono text-cyan-400/80"
             >
               {SPLASH_MESSAGES[messageIndex]}
             </motion.p>
           </AnimatePresence>
         </div>
 
-        {/* Progress rail */}
-        <div className="w-full bg-slate-900 h-1.5 rounded-full border border-cyan-500/10 overflow-hidden relative p-[1px]">
-          <motion.div 
-            className="h-full bg-gradient-to-r from-cyan-500 via-teal-400 to-amber-500 rounded-full" 
+        <div className="w-full bg-slate-900 h-1.5 rounded-full border border-cyan-500/10 overflow-hidden relative">
+          <motion.div
+            className="h-full bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400 rounded-full"
             style={{ width: `${progress}%` }}
+          />
+          <motion.div
+            className="absolute top-0 h-full w-12 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+            animate={{ x: ['-12px', '100%'] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+            style={{ left: `${progress}%` }}
           />
         </div>
 
-        {/* Dynamic loading text */}
         <div className="flex justify-between items-center text-[9px] font-mono text-slate-500">
-          <span>SECURE SECRETS DECRYPTED</span>
+          <span>SECURE LINK ESTABLISHED</span>
           <span>{Math.round(progress)}% CONNECTED</span>
         </div>
 
-        {/* Seamless transition trigger button */}
         <div className="pt-2">
           {isDone ? (
             <motion.button
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onComplete}
-              className="px-8 py-3 bg-gradient-to-r from-cyan-500 via-teal-500 to-amber-500 text-slate-950 font-display font-extrabold text-xs uppercase tracking-widest rounded-xl cursor-pointer shadow-lg shadow-cyan-400/20 border border-cyan-300/20"
+              className="px-8 py-3 bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-slate-950 font-display font-extrabold text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-cyan-400/20 border border-cyan-300/20 flex items-center gap-2 mx-auto"
             >
-              Enter Olayo Operations Portal →
+              Enter Operations Portal <ArrowRight className="w-4 h-4" />
             </motion.button>
           ) : (
             <button
               onClick={onComplete}
-              className="text-[9px] font-mono text-slate-600 hover:text-slate-400 transition-colors uppercase tracking-widest cursor-pointer"
+              className="text-[9px] font-mono text-slate-600 hover:text-slate-400 uppercase tracking-widest"
             >
-              Skip Loading Sequences
+              Skip Loading
             </button>
           )}
         </div>
-
       </div>
-
     </div>
   );
 }

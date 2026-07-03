@@ -1,16 +1,112 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Instrument Serif", serif;
+
+  /* Depth & elevation system */
+  --depth-1: 0 1px 2px rgba(2, 6, 23, 0.4), 0 1px 3px rgba(2, 6, 23, 0.2);
+  --depth-2: 0 4px 12px rgba(2, 6, 23, 0.5), 0 2px 4px rgba(2, 6, 23, 0.3);
+  --depth-3: 0 12px 32px rgba(2, 6, 23, 0.6), 0 4px 8px rgba(2, 6, 23, 0.4);
+  --depth-4: 0 24px 64px rgba(2, 6, 23, 0.7), 0 8px 16px rgba(2, 6, 23, 0.5);
+  --depth-glow: 0 0 40px rgba(34, 211, 238, 0.15), 0 0 80px rgba(20, 184, 166, 0.08);
+
+  /* Motion tokens */
+  --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Elegant wave animation overlay */
+/* ============ BASE ============ */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  background: #020617;
+}
+
+body {
+  font-family: var(--font-sans);
+  overscroll-behavior: none;
+}
+
+/* ============ GLASS SURFACES ============ */
+.glass {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, rgba(2, 6, 23, 0.78) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(34, 211, 238, 0.08);
+  box-shadow: var(--depth-2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.glass-strong {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(2, 6, 23, 0.96) 100%);
+  backdrop-filter: blur(40px) saturate(160%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
+  border: 1px solid rgba(34, 211, 238, 0.12);
+  box-shadow: var(--depth-3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.glass-luminous {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.06) 0%, rgba(15, 23, 42, 0.72) 50%, rgba(2, 6, 23, 0.78) 100%);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  box-shadow: var(--depth-3), 0 0 60px rgba(34, 211, 238, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel {
+  background: rgba(8, 15, 30, 0.6);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(34, 211, 238, 0.06);
+}
+
+/* ============ DEPTH LAYERS ============ */
+.layer-raised {
+  box-shadow: var(--depth-1);
+  transform: translateZ(0);
+}
+
+.layer-floating {
+  box-shadow: var(--depth-3);
+  transform: translateZ(0);
+}
+
+.layer-elevated {
+  box-shadow: var(--depth-4);
+  transform: translateZ(0);
+}
+
+/* ============ TEXT GRADIENTS ============ */
+.text-aqua-gradient {
+  background: linear-gradient(135deg, #22d3ee 0%, #2dd4bf 50%, #14b8a6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-aurora-gradient {
+  background: linear-gradient(135deg, #22d3ee 0%, #14b8a6 33%, #f59e0b 66%, #fb923c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 24px rgba(34, 211, 238, 0.5), 0 0 48px rgba(34, 211, 238, 0.2);
+}
+
+/* ============ AMBIENT ANIMATIONS ============ */
 @keyframes drift {
   from { transform: rotate(0deg); }
-  from { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes bubble {
@@ -20,19 +116,150 @@
   100% { transform: translateY(-100px) translateX(20px); opacity: 0; }
 }
 
-/* Custom scrollbar to match deep ocean theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(14, 116, 144, 0.4);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(14, 116, 144, 0.8);
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
 }
 
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes flow {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes wave-surface {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(-2%) translateY(-1%); }
+}
+
+@keyframes data-stream {
+  0% { transform: translateY(100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(40px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(40px) rotate(-360deg); }
+}
+
+@keyframes scan {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(100%); opacity: 1; }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-breathe { animation: breathe 4s ease-in-out infinite; }
+.animate-pulse-ring { animation: pulse-ring 2.5s ease-out infinite; }
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.15), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+.animate-wiggle { animation: wiggle 1.5s ease-in-out infinite; }
+.animate-spin-slow { animation: drift 12s linear infinite; }
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============ UTILITY ============ */
+.perspective {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.mask-fade-b {
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.mask-fade-r {
+  mask-image: linear-gradient(to right, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+}
+
+/* ============ GRID PATTERN ============ */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-grid-fine {
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+/* ============ FOCUS ============ */
+:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button, select, input, textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ============ SELECTION ============ */
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+  color: white;
+}
