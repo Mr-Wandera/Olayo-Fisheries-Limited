@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783049151274_1031",
+      "timestamp": "2026-07-03T03:25:51.274Z",
+      "category": "water",
+      "title": "Water quality telemetry sampled",
+      "description": "Dissolved oxygen 6.51 mg/L, pH 6.99, turbidity 2.13 NTU. All parameters within NEMA compliance band.",
+      "actor": "Joel Wandera",
+      "location": "Vigo Export Desk",
+      "severity": "info"
+    },
+    {
       "id": "evt_1783049131068_2932",
       "timestamp": "2026-07-03T03:25:31.068Z",
       "category": "marketplace",
