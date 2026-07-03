@@ -2,15 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, Boat, CatchReport, Order, ColdChainFacility, SustainabilityMetrics, UserProfile, Lesson, Notification, FarmStatus } from './types';
 import LivingFarmBackground from './components/LivingFarmBackground';
-import CommandDock from './components/CommandDock';
-import AmbientOI from './components/AmbientOI';
+import Sidebar from './components/Sidebar';
+import TopCommandBar from './components/TopCommandBar';
+import ContextPanel from './components/ContextPanel';
 import MissionControl from './components/MissionControl';
 import FarmTwin from './components/FarmTwin';
 import Marketplace from './components/Marketplace';
 import Intelligence from './components/Intelligence';
 import LearningCenter from './components/LearningCenter';
+import AIPlayground from './components/AIPlayground';
 import SplashExperience from './components/SplashExperience';
 import CommandPalette from './components/CommandPalette';
+import AmbientOI from './components/AmbientOI';
 import { CircleAlert as AlertCircle, Sparkles } from 'lucide-react';
 
 export default function App() {
@@ -34,6 +37,8 @@ export default function App() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [oiQuery, setOiQuery] = useState<string | undefined>(undefined);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [contextPanelOpen, setContextPanelOpen] = useState(true);
 
   const fetchAllData = useCallback(async () => {
     try {
@@ -68,7 +73,6 @@ export default function App() {
     return () => clearInterval(t);
   }, [fetchFarmStatus]);
 
-  // Command palette keyboard shortcut
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -109,19 +113,48 @@ export default function App() {
     return <SplashExperience onComplete={() => setShowSplash(false)} />;
   }
 
+  // Calculate dynamic margins based on sidebar/context panel state
+  const leftMargin = sidebarCollapsed ? 64 : 240;
+  const rightMargin = contextPanelOpen ? 320 : 48;
+
   return (
-    <div className="min-h-screen text-slate-100 font-sans relative flex flex-col justify-between">
+    <div className="min-h-screen text-slate-100 font-sans relative">
       <LivingFarmBackground farmStatus={farmStatus} sustainabilityScore={sustainability.environmentalScore} />
 
-      <CommandDock
+      {/* Left sidebar */}
+      <Sidebar
         activeTab={activeTab}
         onTabChanged={setActiveTab}
-        onOpenCommand={() => setCommandOpen(true)}
-        farmStatus={farmStatus ? { weather: farmStatus.weather, dissolvedOxygenMgL: farmStatus.dissolvedOxygenMgL, staffOnDuty: farmStatus.staffOnDuty, boatsActive: farmStatus.boatsActive, timeOfDay: farmStatus.timeOfDay, windKnots: farmStatus.windKnots, lakeTempC: farmStatus.lakeTempC } : null}
-        recentSearches={recentSearches}
         onAskOI={handleAskOI}
+        recentSearches={recentSearches}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
+      {/* Top AI command bar */}
+      <div style={{ marginLeft: leftMargin, marginRight: rightMargin }}>
+        <TopCommandBar
+          activeTab={activeTab}
+          onOpenCommand={() => setCommandOpen(true)}
+          onAskOI={handleAskOI}
+          farmStatus={farmStatus ? { weather: farmStatus.weather, dissolvedOxygenMgL: farmStatus.dissolvedOxygenMgL, staffOnDuty: farmStatus.staffOnDuty, boatsActive: farmStatus.boatsActive, timeOfDay: farmStatus.timeOfDay, windKnots: farmStatus.windKnots, lakeTempC: farmStatus.lakeTempC } : null}
+          recentSearches={recentSearches}
+        />
+      </div>
+
+      {/* Right context panel */}
+      <ContextPanel
+        activeTab={activeTab}
+        farmStatus={farmStatus}
+        sustainabilityScore={sustainability.environmentalScore}
+        facilities={facilities}
+        onAskOI={handleAskOI}
+        onNavigate={setActiveTab}
+        isOpen={contextPanelOpen}
+        onToggle={() => setContextPanelOpen(!contextPanelOpen)}
+      />
+
+      {/* Ambient OI orb */}
       <AmbientOI
         activeTab={activeTab}
         farmStatus={farmStatus}
@@ -130,6 +163,7 @@ export default function App() {
         onNavigate={setActiveTab}
       />
 
+      {/* Command palette */}
       <CommandPalette
         isOpen={commandOpen}
         onClose={() => setCommandOpen(false)}
@@ -138,133 +172,168 @@ export default function App() {
         recentSearches={recentSearches}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-24 z-10">
-        {activeTab === 'mission' && (
-          <div className="space-y-10">
-            {/* Hero */}
-            <section className="text-center space-y-6 max-w-4xl mx-auto py-6">
+      {/* Center workspace — the primary canvas */}
+      <main
+        className="pt-20 pb-8 z-10 transition-all duration-300"
+        style={{ marginLeft: leftMargin, marginRight: rightMargin }}
+      >
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
+          <AnimatePresence mode="wait">
+            {activeTab === 'mission' && (
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
+                key="mission"
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-400 text-xs font-semibold font-mono"
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+                className="space-y-6"
               >
-                <Sparkles className="w-3.5 h-3.5" /> Cage Aquaculture · Lake Victoria · Uganda
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="font-display text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight"
-              >
-                The Living Enterprise <br />
-                <span className="text-aurora-gradient">Aquaculture OS</span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                className="text-sm sm:text-base text-cyan-100/70 font-sans leading-relaxed max-w-2xl mx-auto"
-              >
-                Olayo Fisheries Limited operates a 24/7 cage aquaculture farm on Lake Victoria in Busiime, Busia District, Uganda.
-                This is the digital headquarters — live farm telemetry, digital twin, AI workforce, and marketplace in one platform.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.8 }}
-                className="flex flex-wrap justify-center gap-3 pt-2"
-              >
-                <button
-                  onClick={() => setActiveTab('farm')}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-1 cursor-pointer"
-                >
-                  View Farm Digital Twin
-                </button>
-                <button
-                  onClick={() => setActiveTab('marketplace')}
-                  className="px-6 py-3 rounded-xl bg-slate-900 border border-cyan-500/20 text-cyan-300 text-xs font-bold hover:bg-slate-800 transition-all flex items-center gap-1 cursor-pointer"
-                >
-                  Browse Marketplace
-                </button>
-                <button
-                  onClick={() => setCommandOpen(true)}
-                  className="px-6 py-3 rounded-xl bg-slate-950 border border-cyan-500/10 text-slate-400 text-xs font-bold hover:text-cyan-300 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span className="font-mono">⌘K</span> Search · Ask OI
-                </button>
-              </motion.div>
-            </section>
-
-            <MissionControl sustainabilityScore={sustainability.environmentalScore} onAskOI={handleAskOI} onNavigate={setActiveTab} />
-
-            {/* Sustainability bento */}
-            <section className="space-y-4">
-              <h3 className="font-display text-white font-bold text-base sm:text-lg">Sustainability & Environmental Ledger</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  { label: 'Environmental Score', value: `${sustainability.environmentalScore.toFixed(1)}%`, color: 'text-emerald-400', desc: 'NEMA compliance index reflecting water quality, feed efficiency, and responsible cage management.' },
-                  { label: 'Feed Conversion Ratio', value: '1.32', color: 'text-white', desc: 'Kg of feed per kg of fish produced. Industry benchmark is 1.5-2.0.' },
-                  { label: 'Waste Reduced', value: `${sustainability.wasteReducedKg} kg`, color: 'text-cyan-300', desc: 'Processing byproduct redirected to fish fertilizer and animal feed.' },
-                  { label: 'Carbon Footprint', value: `${sustainability.carbonFootprint} kg`, sub: 'CO₂/kg', color: 'text-white', desc: 'Cage aquaculture has significantly lower carbon footprint than wild-catch fisheries.' },
-                ].map((s, i) => (
+                {/* Hero — minimal */}
+                <section className="text-center space-y-4 max-w-3xl mx-auto py-4">
                   <motion.div
-                    key={s.label}
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08 }}
-                    whileHover={{ y: -3 }}
-                    className="glass rounded-2xl p-5 flex flex-col justify-between"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-400 text-xs font-semibold font-mono"
                   >
-                    <div>
-                      <span className="text-[10px] font-mono text-cyan-400/60 uppercase">{s.label}</span>
-                      <div className={`font-display font-extrabold text-3xl ${s.color} mt-2`}>{s.value} {s.sub && <span className="text-xs text-slate-400 font-sans">{s.sub}</span>}</div>
-                    </div>
-                    <p className="text-[10px] text-slate-400 font-sans leading-normal mt-2">{s.desc}</p>
+                    <Sparkles className="w-3.5 h-3.5" /> AI-First Aquaculture OS · Lake Victoria
                   </motion.div>
-                ))}
-              </div>
-            </section>
-          </div>
-        )}
+                  <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight"
+                  >
+                    The Living Enterprise <span className="text-aurora-gradient">Aquaculture OS</span>
+                  </motion.h1>
+                </section>
 
-        {activeTab === 'farm' && (
-          <FarmTwin boats={boats} facilities={facilities} onAskOI={handleAskOI} />
-        )}
+                <MissionControl sustainabilityScore={sustainability.environmentalScore} onAskOI={handleAskOI} onNavigate={setActiveTab} />
 
-        {activeTab === 'marketplace' && (
-          <Marketplace
-            products={products}
-            currentUser={currentUser}
-            onOrderCompleted={(order) => setOrders(prev => [order, ...prev])}
-            onProductsUpdated={fetchAllData}
-            onAskOI={handleAskOI}
-          />
-        )}
+                {/* Sustainability bento */}
+                <section className="space-y-4">
+                  <h3 className="font-display text-white font-bold text-base sm:text-lg">Sustainability & Environmental Ledger</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { label: 'Environmental Score', value: `${sustainability.environmentalScore.toFixed(1)}%`, color: 'text-emerald-400', desc: 'NEMA compliance index reflecting water quality, feed efficiency, and responsible cage management.' },
+                      { label: 'Feed Conversion Ratio', value: '1.32', color: 'text-white', desc: 'Kg of feed per kg of fish produced. Industry benchmark is 1.5-2.0.' },
+                      { label: 'Waste Reduced', value: `${sustainability.wasteReducedKg} kg`, color: 'text-cyan-300', desc: 'Processing byproduct redirected to fish fertilizer and animal feed.' },
+                      { label: 'Carbon Footprint', value: `${sustainability.carbonFootprint} kg`, sub: 'CO₂/kg', color: 'text-white', desc: 'Cage aquaculture has significantly lower carbon footprint than wild-catch fisheries.' },
+                    ].map((s, i) => (
+                      <motion.div
+                        key={s.label}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.08 }}
+                        whileHover={{ y: -3 }}
+                        className="glass rounded-2xl p-5 flex flex-col justify-between"
+                      >
+                        <div>
+                          <span className="text-[10px] font-mono text-cyan-400/60 uppercase">{s.label}</span>
+                          <div className={`font-display font-extrabold text-3xl ${s.color} mt-2`}>{s.value} {s.sub && <span className="text-xs text-slate-400 font-sans">{s.sub}</span>}</div>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-sans leading-normal mt-2">{s.desc}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </section>
+              </motion.div>
+            )}
 
-        {activeTab === 'intelligence' && (
-          <Intelligence
-            sustainabilityScore={sustainability.environmentalScore}
-            initialQuery={oiQuery}
-            onQueryConsumed={() => setOiQuery(undefined)}
-          />
-        )}
+            {activeTab === 'farm' && (
+              <motion.div
+                key="farm"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              >
+                <FarmTwin boats={boats} facilities={facilities} onAskOI={handleAskOI} />
+              </motion.div>
+            )}
 
-        {activeTab === 'academy' && (
-          <LearningCenter
-            lessons={lessons}
-            currentUser={currentUser}
-            onUserCertified={handleUserCertified}
-            onAskOI={handleAskOI}
-          />
-        )}
+            {activeTab === 'marketplace' && (
+              <motion.div
+                key="marketplace"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              >
+                <Marketplace
+                  products={products}
+                  currentUser={currentUser}
+                  onOrderCompleted={(order) => setOrders(prev => [order, ...prev])}
+                  onProductsUpdated={fetchAllData}
+                  onAskOI={handleAskOI}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === 'intelligence' && (
+              <motion.div
+                key="intelligence"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+                className="space-y-6"
+              >
+                <Intelligence
+                  sustainabilityScore={sustainability.environmentalScore}
+                  initialQuery={oiQuery}
+                  onQueryConsumed={() => setOiQuery(undefined)}
+                />
+                {/* AI Playground — Google AI Studio inspired */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <h3 className="font-display font-semibold text-white text-sm">AI Playground</h3>
+                    <span className="text-[10px] font-mono text-slate-500">· System instructions · Thoughts · Export · Dual-panel</span>
+                  </div>
+                  <AIPlayground
+                    initialQuery={oiQuery}
+                    onQueryConsumed={() => setOiQuery(undefined)}
+                    farmContext={farmStatus ? `Biomass ${(farmStatus.totalBiomassKg / 1000).toFixed(1)}t, O₂ ${farmStatus.dissolvedOxygenMgL} mg/L, ${farmStatus.activeCages} cages` : undefined}
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'academy' && (
+              <motion.div
+                key="academy"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              >
+                <LearningCenter
+                  lessons={lessons}
+                  currentUser={currentUser}
+                  onUserCertified={handleUserCertified}
+                  onAskOI={handleAskOI}
+                />
+              </motion.div>
+            )}
+
+            {/* Generic workspaces — OI handles these */}
+            {['reports', 'operations', 'customers', 'fleet', 'research', 'settings'].includes(activeTab) && (
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+              >
+                <GenericWorkspace tab={activeTab} onAskOI={handleAskOI} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
 
       {/* Notification toast */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 max-w-xs sm:max-w-sm pointer-events-auto">
+      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 max-w-xs sm:max-w-sm pointer-events-auto" style={{ marginRight: rightMargin }}>
         <AnimatePresence>
           {unreadNotificationsCount > 0 && (
             <motion.div
@@ -291,7 +360,10 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="z-10 bg-slate-950/50 border-t border-cyan-500/15 py-6 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row justify-between items-center gap-4">
+      <footer
+        className="z-10 bg-slate-950/50 border-t border-cyan-500/15 py-4 px-6 text-center text-xs text-slate-500 font-mono flex flex-col sm:flex-row justify-between items-center gap-2"
+        style={{ marginLeft: leftMargin, marginRight: rightMargin }}
+      >
         <div>© 2026 Olayo Fisheries Limited. All rights reserved.</div>
         <div className="flex gap-4">
           <span className="text-cyan-400">Busiime, Busia District, Uganda</span>
@@ -299,6 +371,57 @@ export default function App() {
           <span>NEMA Compliant · LVBC Accredited</span>
         </div>
       </footer>
+    </div>
+  );
+}
+
+/* ============ GENERIC WORKSPACE ============ */
+function GenericWorkspace({ tab, onAskOI }: { tab: string; onAskOI: (p: string) => void }) {
+  const labels: Record<string, { title: string; desc: string }> = {
+    reports: { title: 'Reports & Documents', desc: 'Generate, export, and manage operational reports. OI can create PDF, Excel, CSV, and Word documents on demand.' },
+    operations: { title: 'Operations Hub', desc: 'Daily operations management — staff schedules, feed distribution, harvest planning, and maintenance tracking.' },
+    customers: { title: 'Customer Relations', desc: 'Manage buyer relationships, track orders, and analyze customer segments. OI provides churn predictions and upsell recommendations.' },
+    fleet: { title: 'Fleet Management', desc: 'Vessel tracking, maintenance schedules, crew management, and fuel optimization across the Busiime fleet.' },
+    research: { title: 'R&D Laboratory', desc: 'Feed conversion research, water quality studies, and species health analysis. OI assists with experimental design and data analysis.' },
+    settings: { title: 'System Settings', desc: 'Configure OI behavior, system preferences, user permissions, and integration settings.' },
+  };
+  const info = labels[tab] || labels.reports;
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center space-y-3 py-8">
+        <h2 className="font-display font-bold text-white text-2xl">{info.title}</h2>
+        <p className="text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">{info.desc}</p>
+      </div>
+
+      <div className="glass-luminous rounded-3xl p-6 space-y-4 max-w-2xl mx-auto">
+        <div className="flex items-center gap-2">
+          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-400/30">
+            <Sparkles className="w-5 h-5 text-cyan-300" />
+          </motion.div>
+          <div>
+            <div className="font-display font-bold text-white text-sm">OI Workspace Assistant</div>
+            <div className="text-[10px] font-mono text-cyan-400/60">Ask OI to generate content for this workspace</div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            `Provide an overview of ${info.title}`,
+            'Generate a detailed report',
+            'Analyze current status',
+            'Recommend next actions',
+          ].map(q => (
+            <button
+              key={q}
+              onClick={() => onAskOI(q)}
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-cyan-500/10 hover:border-cyan-400/30 hover:bg-cyan-500/5 text-xs text-slate-300 transition-all text-left"
+            >
+              {q}
+              <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

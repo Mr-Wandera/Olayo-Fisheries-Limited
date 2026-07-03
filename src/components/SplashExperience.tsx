@@ -15,6 +15,133 @@ const SPLASH_MESSAGES = [
   'Olayo Fisheries Ecosystem Active. Launching portal...',
 ];
 
+/* ============ REALISTIC SWIMMING FISH ============ */
+interface FishData {
+  id: number;
+  y: number;
+  delay: number;
+  duration: number;
+  scale: number;
+  direction: number;
+  color: string;
+  depth: number;
+}
+
+function SwimmingFish({ fish }: { fish: FishData }) {
+  const startX = fish.direction > 0 ? -15 : 115;
+  const endX = fish.direction > 0 ? 115 : -15;
+
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      style={{ top: `${fish.y}%`, zIndex: Math.floor(fish.depth) }}
+      initial={{ x: `${startX}%`, opacity: 0 }}
+      animate={{ x: `${endX}%`, opacity: [0, fish.depth === 0 ? 0.5 : 0.25, fish.depth === 0 ? 0.5 : 0.25, 0] }}
+      transition={{ duration: fish.duration, repeat: Infinity, delay: fish.delay, ease: 'linear' }}
+    >
+      <motion.div
+        animate={{ y: [0, -6, 0, 4, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ transform: fish.direction < 0 ? 'scaleX(-1)' : 'none' }}
+      >
+        <svg width={60 * fish.scale} height={30 * fish.scale} viewBox="0 0 60 30" fill="none">
+          {/* Body with gradient */}
+          <defs>
+            <linearGradient id={`fishGrad-${fish.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={fish.color} stopOpacity="0.8" />
+              <stop offset="50%" stopColor={fish.color} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={fish.color} stopOpacity="0.15" />
+            </linearGradient>
+          </defs>
+          {/* Fish body — elongated ellipse */}
+          <motion.path
+            d="M5,15 C10,5 25,3 40,5 C50,6 55,10 55,15 C55,20 50,24 40,25 C25,27 10,25 5,15 Z"
+            fill={`url(#fishGrad-${fish.id})`}
+            stroke={fish.color}
+            strokeWidth="0.5"
+            strokeOpacity="0.3"
+            animate={{
+              d: [
+                "M5,15 C10,5 25,3 40,5 C50,6 55,10 55,15 C55,20 50,24 40,25 C25,27 10,25 5,15 Z",
+                "M5,15 C10,7 25,5 40,7 C50,8 55,12 55,15 C55,18 50,22 40,23 C25,25 10,23 5,15 Z",
+                "M5,15 C10,5 25,3 40,5 C50,6 55,10 55,15 C55,20 50,24 40,25 C25,27 10,25 5,15 Z",
+              ]
+            }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Tail — animated wagging */}
+          <motion.path
+            d="M55,15 L58,8 L60,15 L58,22 Z"
+            fill={fish.color}
+            fillOpacity="0.3"
+            stroke={fish.color}
+            strokeWidth="0.3"
+            strokeOpacity="0.3"
+            animate={{ d: ["M55,15 L58,8 L60,15 L58,22 Z", "M55,15 L57,6 L59,15 L57,24 Z", "M55,15 L58,8 L60,15 L58,22 Z"] }}
+            transition={{ duration: 0.4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Dorsal fin */}
+          <motion.path
+            d="M25,5 Q30,1 35,5 L33,8 L27,8 Z"
+            fill={fish.color}
+            fillOpacity="0.2"
+            animate={{ d: ["M25,5 Q30,1 35,5 L33,8 L27,8 Z", "M25,5 Q30,0 35,5 L33,8 L27,8 Z", "M25,5 Q30,1 35,5 L33,8 L27,8 Z"] }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Eye */}
+          <circle cx="14" cy="13" r="1.5" fill="rgba(255,255,255,0.6)" />
+          <circle cx="14" cy="13" r="0.8" fill="rgba(0,0,0,0.8)" />
+          {/* Pectoral fin */}
+          <motion.path
+            d="M28,16 Q32,20 35,18 L33,16 Z"
+            fill={fish.color}
+            fillOpacity="0.15"
+            animate={{ opacity: [0.1, 0.25, 0.1] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+        </svg>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ============ UNDERWATER PLANT ============ */
+function UnderwaterPlant({ x, height, delay }: { x: number; height: number; delay: number }) {
+  return (
+    <div className="absolute bottom-0 pointer-events-none" style={{ left: `${x}%` }}>
+      <motion.svg
+        width={20}
+        height={height}
+        viewBox={`0 0 20 ${height}`}
+        animate={{ rotate: [-3, 3, -3] }}
+        transition={{ duration: 4, repeat: Infinity, delay, ease: 'easeInOut' }}
+        style={{ transformOrigin: 'bottom center' }}
+      >
+        <path d={`M10,${height} Q8,${height * 0.6} 12,${height * 0.3} T10,0`} stroke="rgba(20,184,166,0.2)" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path d={`M10,${height} Q12,${height * 0.5} 8,${height * 0.2} T10,0`} stroke="rgba(20,184,166,0.15)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </motion.svg>
+    </div>
+  );
+}
+
+/* ============ BUBBLE ============ */
+function Bubble({ x, delay, size }: { x: number; delay: number; size: number }) {
+  return (
+    <motion.div
+      className="absolute bottom-0 pointer-events-none"
+      style={{ left: `${x}%` }}
+      initial={{ y: 0, opacity: 0 }}
+      animate={{ y: '-100vh', opacity: [0, 0.3, 0.3, 0] }}
+      transition={{ duration: 6 + Math.random() * 4, repeat: Infinity, delay, ease: 'linear' }}
+    >
+      <div
+        className="rounded-full border border-cyan-300/20"
+        style={{ width: size, height: size, background: 'radial-gradient(circle at 30% 30%, rgba(34,211,238,0.15), transparent)' }}
+      />
+    </motion.div>
+  );
+}
+
 export default function SplashExperience({ onComplete }: SplashExperienceProps) {
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
@@ -37,59 +164,81 @@ export default function SplashExperience({ onComplete }: SplashExperienceProps) 
     return () => { clearInterval(progressTimer); clearInterval(messageTimer); };
   }, []);
 
-  // Generate floating fish particles
-  const fishParticles = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
-    id: i,
+  // Generate realistic fish with varied swimming patterns
+  const fishSchool = useMemo<FishData[]>(() => {
+    const colors = ['#22d3ee', '#14b8a6', '#0ea5e9', '#06b6d4', '#2dd4bf', '#67e8f9'];
+    return Array.from({ length: 12 }).map((_, i) => ({
+      id: i,
+      y: 20 + Math.random() * 60,
+      delay: Math.random() * 8,
+      duration: 12 + Math.random() * 10,
+      scale: 0.5 + Math.random() * 0.8,
+      direction: Math.random() > 0.5 ? 1 : -1,
+      color: colors[i % colors.length],
+      depth: Math.random() > 0.5 ? 0 : 1,
+    }));
+  }, []);
+
+  const plants = useMemo(() => Array.from({ length: 6 }).map((_, i) => ({
+    x: 5 + i * 18 + Math.random() * 8,
+    height: 40 + Math.random() * 60,
+    delay: Math.random() * 3,
+  })), []);
+
+  const bubbles = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
     x: Math.random() * 100,
-    delay: Math.random() * 4,
-    duration: 8 + Math.random() * 6,
-    size: 12 + Math.random() * 8,
+    delay: Math.random() * 6,
+    size: 4 + Math.random() * 10,
   })), []);
 
   return (
     <div className="fixed inset-0 bg-slate-950 z-50 overflow-hidden flex flex-col justify-between p-6 sm:p-8">
-      {/* Background atmosphere */}
-      <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/30 via-slate-950 to-slate-950 pointer-events-none" />
+      {/* Deep water background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/40 via-slate-950 to-slate-950 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent rounded-full blur-3xl pointer-events-none animate-breathe" />
 
+      {/* Light rays from surface */}
+      <div className="absolute top-0 left-0 right-0 h-full pointer-events-none overflow-hidden">
+        {[20, 45, 70].map((x, i) => (
+          <motion.div
+            key={i}
+            className="absolute top-0 w-32 h-full opacity-10"
+            style={{ left: `${x}%`, transform: 'rotate(8deg)', background: 'linear-gradient(to bottom, rgba(34,211,238,0.3), transparent 60%)' }}
+            animate={{ opacity: [0.05, 0.15, 0.05] }}
+            transition={{ duration: 5 + i, repeat: Infinity, delay: i * 1.5 }}
+          />
+        ))}
+      </div>
+
       {/* Animated water surface */}
-      <svg className="absolute bottom-0 left-0 w-full h-1/2 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 50">
+      <svg className="absolute top-0 left-0 w-full h-24 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 20">
         <defs>
-          <linearGradient id="splashWater" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0891b2" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#020617" stopOpacity="0.4" />
+          <linearGradient id="splashSurface" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="transparent" />
           </linearGradient>
         </defs>
         <motion.path
-          d="M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z"
-          fill="url(#splashWater)"
-          animate={{ d: [
-            "M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z",
-            "M0,20 Q25,25 50,20 T100,20 L100,50 L0,50 Z",
-            "M0,20 Q25,15 50,20 T100,20 L100,50 L0,50 Z",
-          ]}}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          d="M0,5 Q25,2 50,5 T100,5 L100,0 L0,0 Z"
+          fill="url(#splashSurface)"
+          animate={{ d: ["M0,5 Q25,2 50,5 T100,5 L100,0 L0,0 Z", "M0,5 Q25,8 50,5 T100,5 L100,0 L0,0 Z", "M0,5 Q25,2 50,5 T100,5 L100,0 L0,0 Z"] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         />
       </svg>
 
-      {/* Floating fish silhouettes */}
-      {fishParticles.map(f => (
-        <motion.div
-          key={f.id}
-          className="absolute opacity-10 text-cyan-400 pointer-events-none"
-          style={{ top: `${30 + Math.random() * 40}%`, left: `${f.x}%` }}
-          initial={{ x: -50 }}
-          animate={{ x: typeof window !== 'undefined' ? window.innerWidth + 50 : 1000 }}
-          transition={{ duration: f.duration, repeat: Infinity, delay: f.delay, ease: 'linear' }}
-        >
-          <Fish style={{ width: f.size, height: f.size }} />
-        </motion.div>
-      ))}
+      {/* Swimming fish — realistic with body undulation */}
+      {fishSchool.map(f => <SwimmingFish key={f.id} fish={f} />)}
+
+      {/* Underwater plants swaying */}
+      {plants.map((p, i) => <UnderwaterPlant key={i} {...p} />)}
+
+      {/* Rising bubbles */}
+      {bubbles.map((b, i) => <Bubble key={i} {...b} />)}
 
       {/* Top deck */}
       <div className="flex justify-between items-center text-slate-500 text-[10px] font-mono tracking-widest z-10">
         <span>LOC: BUSIA DISTRICT · UGANDA</span>
-        <span className="hidden sm:inline">SYS VERSION: 1.0.0</span>
+        <span className="hidden sm:inline">SYS VERSION: 2.0.0</span>
       </div>
 
       {/* Centerpiece */}
