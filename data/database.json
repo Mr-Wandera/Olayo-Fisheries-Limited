@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783048462495_4709",
+      "timestamp": "2026-07-03T03:14:22.495Z",
+      "category": "feeding",
+      "title": "Automated feeding completed — Cage Alpha-1",
+      "description": "Floating feed pellets distributed across Cage Alpha-1. Total daily ration: 244.2 kg across all cages. Feed conversion ratio holding at 1.32.",
+      "actor": "Mary Atimang",
+      "location": "Feed Mill",
+      "severity": "success"
+    },
+    {
       "id": "evt_1783048442505_8989",
       "timestamp": "2026-07-03T03:14:02.505Z",
       "category": "community",
