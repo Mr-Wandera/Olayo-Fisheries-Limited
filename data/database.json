@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783052428876_9",
+      "timestamp": "2026-07-03T04:20:28.876Z",
+      "category": "feeding",
+      "title": "Automated feeding completed — Cage Gamma-1",
+      "description": "Floating feed pellets distributed across Cage Gamma-1. Total daily ration: 244.2 kg across all cages. Feed conversion ratio holding at 1.32.",
+      "actor": "Joel Wandera",
+      "location": "Vigo Export Desk",
+      "severity": "success"
+    },
+    {
       "id": "evt_1783052209658_4628",
       "timestamp": "2026-07-03T04:16:49.658Z",
       "category": "marketplace",
