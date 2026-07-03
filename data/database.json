@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783049131068_2932",
+      "timestamp": "2026-07-03T03:25:31.068Z",
+      "category": "marketplace",
+      "title": "Marketplace order confirmed",
+      "description": "Wholesale order from Kampala Fresh Distributors confirmed for 220 kg Nile Tilapia. Invoice INV-7584. Pending orders now 3.",
+      "actor": "Samuel Okello",
+      "location": "Lake Victoria North Bay",
+      "severity": "success"
+    },
+    {
       "id": "evt_1783048784809_3416",
       "timestamp": "2026-07-03T03:19:44.809Z",
       "category": "marketplace",
