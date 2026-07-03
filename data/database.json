@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783048442505_8989",
+      "timestamp": "2026-07-03T03:14:02.505Z",
+      "category": "community",
+      "title": "School farm tour arrived",
+      "description": "Busia Primary School group of 24 students arrived for educational tour. Hatchery and cage grid demonstration scheduled.",
+      "actor": "Dr. Amina Nakato",
+      "location": "Feed Mill",
+      "severity": "info"
+    },
+    {
       "id": "evt_1783048389627_5039",
       "timestamp": "2026-07-03T03:13:09.627Z",
       "category": "feeding",
