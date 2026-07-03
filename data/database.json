@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783048389627_5039",
+      "timestamp": "2026-07-03T03:13:09.627Z",
+      "category": "feeding",
+      "title": "Automated feeding completed — Cage Gamma-2",
+      "description": "Floating feed pellets distributed across Cage Gamma-2. Total daily ration: 244.2 kg across all cages. Feed conversion ratio holding at 1.32.",
+      "actor": "Dr. Abdul Wandera",
+      "location": "Busiime Cage Grid",
+      "severity": "success"
+    },
+    {
       "id": "evt_1783048369313_8096",
       "timestamp": "2026-07-03T03:12:49.313Z",
       "category": "community",
