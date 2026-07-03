@@ -689,6 +689,16 @@
   },
   "farmEvents": [
     {
+      "id": "evt_1783052136104_5518",
+      "timestamp": "2026-07-03T04:15:36.104Z",
+      "category": "ai",
+      "title": "OI generated operational recommendation",
+      "description": "Olayo Intelligence recommends shifting 15% of Cage Beta-2 ration to evening window based on 7-day growth variance analysis. Confidence 87%. Awaiting manager approval.",
+      "actor": "Grace Akello",
+      "location": "Outgrower Network",
+      "severity": "info"
+    },
+    {
       "id": "evt_1783049598640_4565",
       "timestamp": "2026-07-03T03:33:18.640Z",
       "category": "fleet",
